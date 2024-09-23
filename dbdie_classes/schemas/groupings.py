@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import datetime as dt
 from typing import Optional
+from typing_extensions import Self
 
-from pydantic import BaseModel, Field, ValidationInfo, field_validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator, model_validator
 
 from dbdie_classes.base import ModelType, PlayerId
 from dbdie_classes.version import DBDVersion
-from dbdie_classes.code.groupings import check_strict, predictables_for_sqld
+from dbdie_classes.code.groupings import (
+    check_strict, labels_model_to_checks, predictables_for_sqld
+)
 from dbdie_classes.code.schemas import (
     check_addons_consistency,
     check_item_consistency,
@@ -27,11 +30,79 @@ from dbdie_classes.schemas.predictables import (
 )
 from dbdie_classes.options.MODEL_TYPE import ALL as ALL_MT
 
+
+# * Full characters
+
+
+class FullCharacterCreate(BaseModel):
+    """Full character creation schema.
+    Includes the creation perks and addons (if addons apply).
+    DBD game version must already exist in the database.
+
+    Note: This schema shouldn't be used for creating legendary outfits that
+    use base_char_id. Please use CharacterCreate instead.
+    """
+
+    name:               str
+    is_killer:         bool
+    power_name:         str | None
+    perk_names:   list[str]
+    addon_names:  list[str] | None
+    dbd_version: DBDVersion
+    common_name:        str
+    emoji:              str
+
+    @field_validator("perk_names")
+    @classmethod
+    def perks_must_be_three(cls, perks: list) -> list[str]:
+        assert len(perks) == 3, "You must provide exactly 3 perk names"
+        return perks
+
+    @field_validator("emoji")
+    @classmethod
+    def emoji_len_le_4(cls, emoji: str) -> str:
+        assert len(emoji) <= 4, "Emoji character-equivalence must be as most 4"
+        return emoji
+
+    @model_validator(mode="after")
+    def check_power_name(self) -> Self:
+        assert (self.power_name is not None) == self.is_killer, "Killers must have a power name, survivors can't."
+        return self
+
+    @model_validator(mode="after")
+    def check_total_addons(self) -> Self:
+        if self.is_killer:
+            assert (
+                self.addon_names is not None and len(self.addon_names) == 20
+            ), "You must provide exactly 20 killer addon names"
+        else:
+            if self.addon_names is not None:
+                assert not self.addon_names, "Survivors can't have addon names"
+                self.addon_names = None
+        return self
+
+
+class FullCharacterOut(BaseModel):
+    """Full character output schema."""
+
+    character:    CharacterOut
+    power:             ItemOut | None
+    perks:       list[PerkOut]
+    addons:     list[AddonOut] | None
+    common_name:        str | None
+    # proba:    Probability | None = None
+    is_killer:         bool | None
+    base_char_id:       int | None
+    dbd_version_id:     int | None
+    emoji:              str | None
+
+
 # * Players
 
 
 class PlayerIn(BaseModel):
-    """Player input schema to be used for creating labels"""
+    """Player input schema to be used for creating labels."""
+
     id: int
     character_id:       int | None = Field(None, ge=0)
     perk_ids:     list[int] | None = None
@@ -114,15 +185,15 @@ class PlayerIn(BaseModel):
 class PlayerOut(BaseModel):
     """Player output schema as seen in created labels"""
 
-    id:        PlayerId
-    character: CharacterOut
-    perks:     list[PerkOut]
-    item:      ItemOut
+    id:              PlayerId
+    character:   CharacterOut
+    perks:      list[PerkOut]
+    item:             ItemOut
     addons:    list[AddonOut]
-    offering:  OfferingOut
-    status:    StatusOut
-    points:    int
-    prestige:  int
+    offering:     OfferingOut
+    status:         StatusOut
+    points:               int
+    prestige:             int
     is_consistent: Optional[bool] = None
 
     def model_post_init(self, __context) -> None:
@@ -195,24 +266,12 @@ class ManualChecksIn(BaseModel):
             self.status,
         ]
 
-    @staticmethod
-    def model_to_cols(labels_model):
-        return [
-            labels_model.addons_mckd,
-            labels_model.character_mckd,
-            labels_model.item_mckd,
-            labels_model.offering_mckd,
-            labels_model.perks_mckd,
-            labels_model.points_mckd,
-            labels_model.prestige_mckd,
-            labels_model.status_mckd,
-        ]
-
     def get_filters_conds(self, labels_model) -> list[tuple]:
+        """Get filters conditions for SQLAlchemy."""
         return [
             (col, chk)
             for col, chk in zip(
-                self.model_to_cols(labels_model),
+                labels_model_to_checks(labels_model),
                 self.checks,
             )
             if chk is not None
@@ -263,13 +322,13 @@ class ManualChecksOut(BaseModel):
 class MatchCreate(BaseModel):
     """DBD match creation schema."""
 
-    filename:     str
-    match_date:   dt.date | None = None
+    filename:            str
+    match_date:      dt.date | None = None
     dbd_version:  DBDVersion | None = None
-    special_mode: bool | None = None
-    user_id:      int | None = None
-    extractor_id: int | None = None
-    kills:        int | None = Field(None, ge=0, le=4)
+    special_mode:       bool | None = None
+    user_id:             int | None = Field(None, ge=0)
+    extractor_id:        int | None = Field(None, ge=0)
+    kills:               int | None = Field(None, ge=0, le=4)
 
 
 class MatchOut(BaseModel):
@@ -299,9 +358,9 @@ class VersionedMatchOut(BaseModel):
 
     id:           int
     filename:     str
-    match_date:   Optional[dt.date]
+    match_date:   dt.date | None
     dbd_version:  DBDVersionOut
-    special_mode: Optional[bool]
+    special_mode: bool | None
 
 
 class LabelsCreate(BaseModel):

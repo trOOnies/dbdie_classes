@@ -48,7 +48,7 @@ clean-lint: ## [ruff] Remove cache
 	rm -rf .ruff_cache
 
 test: ## [pytest] Test the code and coverage
-	python3 -m pytest --cov=dbdie_ml
+	python3 -m pytest --cov=dbdie_classes
 
 clean-test: ## [pytest] Remove test and coverage artifacts
 	rm -rf .pytest_cache

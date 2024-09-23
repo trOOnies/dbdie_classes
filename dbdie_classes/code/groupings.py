@@ -4,6 +4,20 @@ from dbdie_classes.options import MODEL_TYPE as MT
 from dbdie_classes.options import SQL_COLS
 
 
+def labels_model_to_checks(labels_model):
+    """Labels SQLAlchemy model to its manual check columns."""
+    return [
+        labels_model.addons_mckd,
+        labels_model.character_mckd,
+        labels_model.item_mckd,
+        labels_model.offering_mckd,
+        labels_model.perks_mckd,
+        labels_model.points_mckd,
+        labels_model.prestige_mckd,
+        labels_model.status_mckd,
+    ]
+
+
 def predictables_for_sqld(player, fps: list[str]) -> dict:
     """Predictables to add to SQL dict."""
     sqld = {
