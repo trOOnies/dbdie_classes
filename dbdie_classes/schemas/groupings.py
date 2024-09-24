@@ -127,7 +127,7 @@ class PlayerIn(BaseModel):
         except AttributeError:
             addons = None
 
-        player = PlayerIn(
+        return PlayerIn(
             id=labels.player_id,
             character_id=getattr(labels, "character", None),
             perk_ids=perks,
@@ -138,7 +138,6 @@ class PlayerIn(BaseModel):
             points=getattr(labels, "points", None),
             prestige=getattr(labels, "prestige", None),
         )
-        return player
 
     @field_validator("perk_ids", "addon_ids")
     @classmethod

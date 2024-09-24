@@ -31,3 +31,5 @@ MT_TO_COLS = {
     # MT.POINTS: POINTS,
     # MT.PRESTIGE: PRESTIGE,
 }
+
+MANUALLY_CHECKED_COLS = [f"{mt}_mckd" for mt in MT.ALL]

@@ -33,7 +33,8 @@ def recursive_dirname(path: "Path", n: int) -> "PathToFolder":
 
 def validate_rp(rp: "RelPath") -> "RelPath":
     """Validate if the relative path exists and return it if so."""
-    assert isdir(absp(rp)), f"Relative path doesn't exist: {rp}"
+    if environ["CHECK_RPS"] == "yes":
+        assert isdir(absp(rp)), f"Relative path doesn't exist: {rp}"
     return rp
 
 

@@ -24,6 +24,14 @@ MULTIPLE_PER_PLAYER = [
     PERKS,
 ]
 
+ALL_MULTIPLE_CHOICE = [
+    ADDONS,
+    CHARACTER,
+    ITEM,
+    OFFERING,
+    PERKS,
+    STATUS,
+]
 ALL = [
     ADDONS,
     CHARACTER,
@@ -34,6 +42,10 @@ ALL = [
     PRESTIGE,
     STATUS,
 ]
+# EMOJIS = ["💡", "🧑", "🔦", "🛑", "💠", "🔢", "❇️", "💀"]
+EMOJIS = ["💡", "🧑", "🔦", "🛑", "💠", "💀"]
+
+WITH_TYPES = [ADDONS, ITEM, OFFERING]
 
 TO_ID_NAMES = {
     ADDONS: "addon_ids",

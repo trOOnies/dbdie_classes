@@ -3,12 +3,12 @@
 from typing import Literal
 
 # General
-PlayerId = Literal[0, 1, 2, 3, 4]
 ModelType = Literal[
     "character", "perks", "item", "addons", "offering", "status", "points", "prestige"
 ]
 PlayerStrict = Literal["killer", "surv"]
 PlayerType = PlayerStrict | None
+IsForKiller = bool | None
 FullModelType = str  # i.e. character__killer
 Probability = float  # 0.0 to 1.0
 
@@ -28,6 +28,8 @@ EncodedInfo = tuple[int, int, tuple, int, tuple, int, int]
 CropType = Literal["surv", "killer", "surv_player", "killer_player"]
 
 # Labels
+MatchId = int
+PlayerId = Literal[0, 1, 2, 3, 4]
 LabelId = int
 LabelName = str
 LabelRef = dict[LabelId, LabelName]
