@@ -19,10 +19,10 @@ from dbdie_classes.code.schemas import (
     check_killer_consistency,
     check_status_consistency,
 )
+from dbdie_classes.schemas.helpers import DBDVersionOut
 from dbdie_classes.schemas.predictables import (
     AddonOut,
     CharacterOut,
-    DBDVersionOut,
     ItemOut,
     OfferingOut,
     PerkOut,

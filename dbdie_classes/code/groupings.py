@@ -4,6 +4,14 @@ from dbdie_classes.options import MODEL_TYPE as MT
 from dbdie_classes.options import SQL_COLS
 
 
+def labels_model_to_labeled_predictables(labels_model):
+    """Labels SQLAlchemy model to the labeled predictables."""
+    return [
+        getattr(labels_model, col)
+        for col in SQL_COLS.ALL_FLATTENED
+    ]
+
+
 def labels_model_to_checks(labels_model):
     """Labels SQLAlchemy model to its manual check columns."""
     return [

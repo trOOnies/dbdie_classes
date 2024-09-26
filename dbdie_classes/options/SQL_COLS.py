@@ -1,6 +1,6 @@
 """Columns as they appear in the SQL database."""
 
-from dbdie_classes.options import MODEL_TYPES as MT
+from dbdie_classes.options import MODEL_TYPE as MT
 
 CHARACTER = ["character"]
 PERKS     = ["perk_0", "perk_1", "perk_2", "perk_3"]
@@ -21,6 +21,8 @@ ALL = [
     # POINTS,
     # PRESTIGE,
 ]
+ALL_FLATTENED = sum((cols for cols in ALL), [])
+
 MT_TO_COLS = {
     MT.CHARACTER: CHARACTER,
     MT.PERKS: PERKS,
