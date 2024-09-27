@@ -11,6 +11,8 @@ PlayerType = PlayerStrict | None
 IsForKiller = bool | None
 FullModelType = str  # i.e. character__killer
 Probability = float  # 0.0 to 1.0
+Endpoint = str  # must start with a slash
+FullEndpoint = str  # host and endpoint
 
 # Paths
 Filename = str

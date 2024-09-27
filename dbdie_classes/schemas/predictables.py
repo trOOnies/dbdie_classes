@@ -109,7 +109,6 @@ class PerkOut(BaseModel):
     name           : str
     proba          : Probability | None = None
     character_id   : int
-    is_for_killer  : bool | None
     dbd_version_id : int | None
     emoji          : str | None
 
@@ -136,7 +135,6 @@ class OfferingOut(BaseModel):
     proba          : Probability | None = None
     type_id        : int
     user_id        : int
-    is_for_killer  : bool | None
     dbd_version_id : int | None
     rarity_id      : int | None
 

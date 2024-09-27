@@ -46,7 +46,7 @@ def predictables_for_sqld(player, fps: list[str]) -> dict:
         cond = player.addon_ids is not None
         sqld = sqld | {
             col: aid if cond else None
-            for aid, col in enumerate(player.addon_ids, SQL_COLS.ADDONS)
+            for aid, col in zip(player.addon_ids, SQL_COLS.ADDONS)
         } | {"addons_mckd": True}
 
     return sqld

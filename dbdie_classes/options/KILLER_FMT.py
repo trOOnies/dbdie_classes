@@ -9,7 +9,7 @@ ITEM      = f"{MT.ITEM}__{PT_KILLER}"
 OFFERING  = f"{MT.OFFERING}__{PT_KILLER}"
 PERKS     = f"{MT.PERKS}__{PT_KILLER}"
 
-KILLER = [
+ALL = [
     ADDONS,
     CHARACTER,
     ITEM,

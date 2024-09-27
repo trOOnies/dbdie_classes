@@ -70,4 +70,4 @@ INT_IDS: dict["ModelType", list["LabelId"]] = {
 
 def mt_is_null(data: "Series", mt: "ModelType") -> "Series":
     """Boolean mask that checks if the ModelType is null."""
-    return data.isin(set(INT_IDS[mt]))
+    return data.isnull() | data.isin(set(INT_IDS[mt]))
