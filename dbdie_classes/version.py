@@ -43,7 +43,7 @@ class DBDVersion:
 class DBDVersionRange:
     """DBD game version range, first inclusive last exclusive."""
 
-    id: str
+    id:     str
     max_id: str | None = None
 
     def __post_init__(self):
@@ -84,7 +84,7 @@ class DBDVersionRange:
         """Checks if a DBDVersion is contained in the DBDVersionRange."""
         return (self._id <= v) and ((not self.bounded) or (v < self._max_id))
 
-    def __and__(self, other) -> DBDVersionRange | None:
+    def __and__(self, other: DBDVersionRange) -> DBDVersionRange | None:
         """DBDVersions intersection."""
         _id = max(self._id, other._id)
         id = str(_id)

@@ -1,16 +1,21 @@
 """Survivor full model types."""
 
+from typing import TYPE_CHECKING
+
 from dbdie_classes.options import MODEL_TYPE as MT
-from dbdie_classes.options.PLAYER_TYPE import SURV as PT_SURV
+from dbdie_classes.options.PLAYER_TYPE import SURV
 
-ADDONS    = f"{MT.ADDONS}__{PT_SURV}"
-CHARACTER = f"{MT.CHARACTER}__{PT_SURV}"
-ITEM      = f"{MT.ITEM}__{PT_SURV}"
-OFFERING  = f"{MT.OFFERING}__{PT_SURV}"
-PERKS     = f"{MT.PERKS}__{PT_SURV}"
-STATUS    = f"{MT.STATUS}__{PT_SURV}"
+if TYPE_CHECKING:
+    from dbdie_classes.base import FullModelType
 
-SURV = [
+ADDONS    : "FullModelType" = f"{MT.ADDONS}__{SURV}"
+CHARACTER : "FullModelType" = f"{MT.CHARACTER}__{SURV}"
+ITEM      : "FullModelType" = f"{MT.ITEM}__{SURV}"
+OFFERING  : "FullModelType" = f"{MT.OFFERING}__{SURV}"
+PERKS     : "FullModelType" = f"{MT.PERKS}__{SURV}"
+STATUS    : "FullModelType" = f"{MT.STATUS}__{SURV}"
+
+ALL: list["FullModelType"] = [
     ADDONS,
     CHARACTER,
     ITEM,

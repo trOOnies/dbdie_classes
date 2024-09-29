@@ -22,27 +22,27 @@ class TestCodeSchemas:
     @mark.parametrize(
         "exp,is_killer,addons_type_ids",
         [
-            (True, True, [0, 0]),
-            (True, True, [0, 1]),
-            (True, True, [1, 0]),
-            (True, True, [1, 1]),
-            (True, False, [0, 0]),
+            (True,  True,  [0, 0]),
+            (True,  True,  [0, 1]),
+            (True,  True,  [1, 0]),
+            (True,  True,  [1, 1]),
+            (True,  False, [0, 0]),
             (False, False, [0, 1]),
             (False, False, [1, 0]),
             (False, False, [1, 1]),
-            (True, False, [2, 0]),
-            (True, False, [0, 2]),
+            (True,  False, [2, 0]),
+            (True,  False, [0, 2]),
             (False, False, [2, 1]),
             (False, False, [1, 2]),
-            (True, False, [2, 2]),
-            (True, False, [0, 3]),
-            (True, False, [3, 0]),
+            (True,  False, [2, 2]),
+            (True,  False, [0, 3]),
+            (True,  False, [3, 0]),
             (False, False, [1, 3]),
             (False, False, [3, 1]),
-            (True, False, [2, 3]),
-            (True, False, [3, 2]),
-            (True, False, [4, 5]),
-            (True, False, [6, 7]),
+            (True,  False, [2, 3]),
+            (True,  False, [3, 2]),
+            (True,  False, [4, 5]),
+            (True,  False, [6, 7]),
         ],
     )
     def test_check_addons_consistency(
@@ -57,16 +57,16 @@ class TestCodeSchemas:
     @mark.parametrize(
         "exp,is_killer,item_type_id",
         [
-            (False, True, 0),
-            (True, True, 1),
-            (False, True, 2),
-            (False, True, 3),
-            (False, True, 4),
-            (True, False, 0),
+            (False, True,  0),
+            (True,  True,  1),
+            (False, True,  2),
+            (False, True,  3),
+            (False, True,  4),
+            (True,  False, 0),
             (False, False, 1),
-            (True, False, 2),
-            (True, False, 3),
-            (True, False, 4),
+            (True,  False, 2),
+            (True,  False, 3),
+            (True,  False, 4),
         ],
     )
     def test_check_item_consistency(self, exp, is_killer, item_type_id):
@@ -75,12 +75,12 @@ class TestCodeSchemas:
     @mark.parametrize(
         "exp,is_killer,is_for_killer",
         [
-            (True, True, True),
-            (False, True, False),
-            (True, True, None),
+            (True,  True,  True),
+            (False, True,  False),
+            (True,  True,  None),
             (False, False, True),
-            (True, False, False),
-            (True, False, None),
+            (True,  False, False),
+            (True,  False, None),
         ],
     )
     def test_check_killer_consistency(self, exp, is_killer, is_for_killer):
@@ -90,12 +90,12 @@ class TestCodeSchemas:
     @mark.parametrize(
         "exp,status_character_id,is_killer",
         [
-            (True, 0, True),
-            (True, 0, False),
-            (True, 1, True),
+            (True,  0, True),
+            (True,  0, False),
+            (True,  1, True),
             (False, 1, False),
             (False, 2, True),
-            (True, 2, False),  # ! there shouldn't be any other value
+            (True,  2, False),  # ! there shouldn't be any other value
         ],
     )
     def test_check_status_consistency(

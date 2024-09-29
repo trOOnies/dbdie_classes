@@ -2,47 +2,49 @@
 
 from pydantic import BaseModel, field_validator
 
+from dbdie_classes.base import Emoji, IsForKiller
+
 
 class ItemTypeOut(BaseModel):
     """Match item type output schema."""
-    id            : int
-    name          : str
-    emoji         : str | None
-    is_for_killer : bool | None
+    id            :   int
+    name          :   str
+    emoji         : Emoji | None
+    is_for_killer :  IsForKiller
 
 
 class AddonTypeOut(BaseModel):
     """Item-or-power addon type output schema."""
-    id            : int
-    name          : str
-    emoji         : str | None
-    is_for_killer : bool | None
+    id            :   int
+    name          :   str
+    emoji         : Emoji | None
+    is_for_killer :  IsForKiller
 
 
 class OfferingTypeOut(BaseModel):
     """Offering type output schema."""
-    id            : int
-    name          : str
-    emoji         : str | None
-    is_for_killer : bool | None
+    id            :   int
+    name          :   str
+    emoji         : Emoji | None
+    is_for_killer :  IsForKiller
 
 
 class RarityCreate(BaseModel):
     """Item rarity create schema."""
-    name: str
+    name:  str
     color: str
-    emoji: str
+    emoji: Emoji
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len_le_4(cls, emoji: str) -> str:
-        assert len(emoji) <= 4, "Emoji character-equivalence must be as most 4"
+    def emoji_len(cls, emoji: str) -> Emoji:
+        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
         return emoji
 
 
 class RarityOut(BaseModel):
     """Item rarity output schema."""
-    id: int
-    name: str
+    id:    int
+    name:  str
     color: str
-    emoji: str
+    emoji: Emoji

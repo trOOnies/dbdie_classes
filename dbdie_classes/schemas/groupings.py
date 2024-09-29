@@ -8,7 +8,17 @@ from typing_extensions import Self
 
 from pydantic import BaseModel, Field, ValidationInfo, field_validator, model_validator
 
-from dbdie_classes.base import ModelType, PlayerId
+from dbdie_classes.base import (
+    Emoji,
+    Filename,
+    IsForKiller,
+    LabelId,
+    LabelName,
+    ManualCheck,
+    MatchId,
+    ModelType,
+    PlayerId,
+)
 from dbdie_classes.version import DBDVersion
 from dbdie_classes.code.groupings import (
     check_strict, labels_model_to_checks, predictables_for_sqld
@@ -43,41 +53,44 @@ class FullCharacterCreate(BaseModel):
     use base_char_id. Please use CharacterCreate instead.
     """
 
-    name:               str
-    is_killer:         bool
-    power_name:         str | None
-    perk_names:   list[str]
-    addon_names:  list[str] | None
-    dbd_version: DBDVersion
-    common_name:        str
-    emoji:              str
+    name:              LabelName
+    is_killer:              bool
+    power_name:        LabelName | None
+    perk_names:  list[LabelName]
+    addon_names: list[LabelName] | None
+    dbd_version:      DBDVersion
+    common_name:             str
+    emoji:                 Emoji
 
     @field_validator("perk_names")
     @classmethod
-    def perks_must_be_three(cls, perks: list) -> list[str]:
-        assert len(perks) == 3, "You must provide exactly 3 perk names"
+    def perks_must_be_three(cls, perks: list) -> list[LabelName]:
+        assert len(perks) == 3, "You must provide exactly 3 perk names."
+        assert len(set(perks)) == 3, "Perk names can't repeat."
         return perks
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len_le_4(cls, emoji: str) -> str:
-        assert len(emoji) <= 4, "Emoji character-equivalence must be as most 4"
+    def emoji_len(cls, emoji: str) -> Emoji:
+        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
         return emoji
 
     @model_validator(mode="after")
     def check_power_name(self) -> Self:
-        assert (self.power_name is not None) == self.is_killer, "Killers must have a power name, survivors can't."
+        assert (
+            (self.power_name is not None) == self.is_killer
+        ), "Killers must have a power name, survivors can't."
         return self
 
     @model_validator(mode="after")
     def check_total_addons(self) -> Self:
         if self.is_killer:
             assert (
-                self.addon_names is not None and len(self.addon_names) == 20
-            ), "You must provide exactly 20 killer addon names"
+                (self.addon_names is not None) and (len(self.addon_names) == 20)
+            ), "You must provide exactly 20 killer addon names."
         else:
             if self.addon_names is not None:
-                assert not self.addon_names, "Survivors can't have addon names"
+                assert not self.addon_names, "Survivors can't have addon names."
                 self.addon_names = None
         return self
 
@@ -91,10 +104,10 @@ class FullCharacterOut(BaseModel):
     addons:     list[AddonOut] | None
     common_name:        str | None
     # proba:    Probability | None = None
-    is_killer:         bool | None
-    base_char_id:       int | None
+    is_killer:         IsForKiller
+    base_char_id:   LabelId | None
     dbd_version_id:     int | None
-    emoji:              str | None
+    emoji:            Emoji | None
 
 
 # * Players
@@ -103,15 +116,15 @@ class FullCharacterOut(BaseModel):
 class PlayerIn(BaseModel):
     """Player input schema to be used for creating labels."""
 
-    id: int
-    character_id:       int | None = Field(None, ge=0)
-    perk_ids:     list[int] | None = None
-    item_id:            int | None = Field(None, ge=0)
-    addon_ids:    list[int] | None = None
-    offering_id:        int | None = Field(None, ge=0)
-    status_id:          int | None = Field(None, ge=0)
-    points:             int | None = Field(None, ge=0)
-    prestige:           int | None = Field(None, ge=0, le=100)
+    id:                PlayerId
+    character_id:       LabelId | None = Field(None, ge=0)
+    perk_ids:     list[LabelId] | None = None
+    item_id:            LabelId | None = Field(None, ge=0)
+    addon_ids:    list[LabelId] | None = None
+    offering_id:        LabelId | None = Field(None, ge=0)
+    status_id:          LabelId | None = Field(None, ge=0)
+    points:                 int | None = Field(None, ge=0)
+    prestige:               int | None = Field(None, ge=0, le=100)
 
     @classmethod
     def from_labels(cls, labels) -> PlayerIn:
@@ -141,11 +154,11 @@ class PlayerIn(BaseModel):
 
     @field_validator("perk_ids", "addon_ids")
     @classmethod
-    def count_is(
+    def count_ids(
         cls,
         v: Optional[list[int]],
         info: ValidationInfo,
-    ) -> Optional[list[int]]:
+    ) -> Optional[list[LabelId]]:
         if v is None:
             return v
         elif info.field_name == "perk_ids":
@@ -182,7 +195,7 @@ class PlayerIn(BaseModel):
 
 
 class PlayerOut(BaseModel):
-    """Player output schema as seen in created labels"""
+    """Player output schema as seen in created labels."""
 
     id:              PlayerId
     character:   CharacterOut
@@ -199,7 +212,7 @@ class PlayerOut(BaseModel):
         self.check_consistency()
 
     @property
-    def is_killer(self) -> Optional[bool]:
+    def is_killer(self) -> IsForKiller:
         return self.character.is_killer
 
     def check_consistency(self) -> None:
@@ -230,14 +243,14 @@ class PlayerOut(BaseModel):
 
 class ManualChecksIn(BaseModel):
     """Manual predictables checks input schema."""
-    addons    : bool | None = None
-    character : bool | None = None
-    item      : bool | None = None
-    offering  : bool | None = None
-    perks     : bool | None = None
-    points    : bool | None = None
-    prestige  : bool | None = None
-    status    : bool | None = None
+    addons    : ManualCheck = None
+    character : ManualCheck = None
+    item      : ManualCheck = None
+    offering  : ManualCheck = None
+    perks     : ManualCheck = None
+    points    : ManualCheck = None
+    prestige  : ManualCheck = None
+    status    : ManualCheck = None
     is_init     : bool = False  # ! do not use
     in_progress : bool = False  # ! do not use
     completed   : bool = False  # ! do not use
@@ -253,7 +266,7 @@ class ManualChecksIn(BaseModel):
         self.completed = all(conds)
 
     @property
-    def checks(self) -> list[bool | None]:
+    def checks(self) -> list[ManualCheck]:
         return [
             self.addons,
             self.character,
@@ -279,13 +292,13 @@ class ManualChecksIn(BaseModel):
 
 class ManualChecksOut(BaseModel):
     """Manual predictables checks output schema."""
-    predictables : dict["ModelType", bool | None]
+    predictables : dict["ModelType", ManualCheck]
     is_init      : bool = False  # ! do not use
     in_progress  : bool = False  # ! do not use
     completed    : bool = False  # ! do not use
 
     @property
-    def checks(self) -> list[bool | None]:
+    def checks(self) -> list[ManualCheck]:
         return [self.predictables[mt] for mt in ALL_MT]
 
     def model_post_init(self, __context) -> None:
@@ -321,7 +334,7 @@ class ManualChecksOut(BaseModel):
 class MatchCreate(BaseModel):
     """DBD match creation schema."""
 
-    filename:            str
+    filename:       Filename
     match_date:      dt.date | None = None
     dbd_version:  DBDVersion | None = None
     special_mode:       bool | None = None
@@ -333,8 +346,8 @@ class MatchCreate(BaseModel):
 class MatchOut(BaseModel):
     """DBD match output schema."""
 
-    id:            int
-    filename:      str
+    id:            MatchId
+    filename:      Filename
     match_date:    dt.date | None
     dbd_version:   DBDVersionOut | None
     special_mode:  bool | None
@@ -355,8 +368,8 @@ class VersionedFolderUpload(BaseModel):
 class VersionedMatchOut(BaseModel):
     """DBD match simplified output schema for DBD-versioned folder upload."""
 
-    id:           int
-    filename:     str
+    id:           MatchId
+    filename:     Filename
     match_date:   dt.date | None
     dbd_version:  DBDVersionOut
     special_mode: bool | None
@@ -365,17 +378,17 @@ class VersionedMatchOut(BaseModel):
 class LabelsCreate(BaseModel):
     """Labels creation schema."""
 
-    match_id:         int
-    player:           PlayerIn
-    user_id:          int | None = None
-    extractor_id:     int | None = None
-    manually_checked: bool | None = None
+    match_id:       MatchId
+    player:         PlayerIn
+    user_id:        int | None = None
+    extractor_id:   int | None = None
+    manual_checks:  ManualChecksIn
 
 
 class LabelsOut(BaseModel):
     """Labels output schema."""
 
-    match_id:       int
+    match_id:       MatchId
     player:         PlayerIn
     date_modified:  dt.datetime
     user_id:        int | None

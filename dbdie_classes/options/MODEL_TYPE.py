@@ -2,16 +2,21 @@
 They aren't 'full' (FullModelTypes) because they lack the surv / killer suffix.
 """
 
-ADDONS    = "addons"
-CHARACTER = "character"
-ITEM      = "item"
-OFFERING  = "offering"
-PERKS     = "perks"
-POINTS    = "points"
-PRESTIGE  = "prestige"
-STATUS    = "status"
+from typing import TYPE_CHECKING
 
-UNIQUE_PER_PLAYER = [
+if TYPE_CHECKING:
+    from dbdie_classes.base import Emoji, ModelType
+
+ADDONS    : "ModelType" = "addons"
+CHARACTER : "ModelType" = "character"
+ITEM      : "ModelType" = "item"
+OFFERING  : "ModelType" = "offering"
+PERKS     : "ModelType" = "perks"
+POINTS    : "ModelType" = "points"
+PRESTIGE  : "ModelType" = "prestige"
+STATUS    : "ModelType" = "status"
+
+UNIQUE_PER_PLAYER: list["ModelType"] = [
     CHARACTER,
     ITEM,
     OFFERING,
@@ -19,12 +24,12 @@ UNIQUE_PER_PLAYER = [
     PRESTIGE,
     STATUS,
 ]
-MULTIPLE_PER_PLAYER = [
+MULTIPLE_PER_PLAYER: list["ModelType"] = [
     ADDONS,
     PERKS,
 ]
 
-ALL_MULTIPLE_CHOICE = [
+ALL_MULTIPLE_CHOICE: list["ModelType"] = [
     ADDONS,
     CHARACTER,
     ITEM,
@@ -32,7 +37,7 @@ ALL_MULTIPLE_CHOICE = [
     PERKS,
     STATUS,
 ]
-ALL = [
+ALL: list["ModelType"] = [
     ADDONS,
     CHARACTER,
     ITEM,
@@ -42,12 +47,12 @@ ALL = [
     PRESTIGE,
     STATUS,
 ]
-# EMOJIS = ["💡", "🧑", "🔦", "🛑", "💠", "🔢", "❇️", "💀"]
-EMOJIS = ["💡", "🧑", "🔦", "🛑", "💠", "💀"]
+# EMOJIS: list["Emoji"] = ["💡", "🧑", "🔦", "🛑", "💠", "🔢", "❇️", "💀"]
+EMOJIS: list["Emoji"] = ["💡", "🧑", "🔦", "🛑", "💠", "💀"]
 
-WITH_TYPES = [ADDONS, ITEM, OFFERING]
+WITH_TYPES: list["ModelType"] = [ADDONS, ITEM, OFFERING]
 
-TO_ID_NAMES = {
+TO_ID_NAMES: dict["ModelType", str] = {
     ADDONS: "addon_ids",
     CHARACTER: "character_id",
     ITEM: "item_id",

@@ -46,8 +46,8 @@ OLD_VS = "_old_versions"
 
 # * Training
 
-CROPS_MAIN_FD_RP     = vrp("data/crops")
-CROPS_VERSIONS_FD_RP = vrp(f"data/crops/{OLD_VS}")
+CROPS_MAIN_FD_RP       = vrp("data/crops")
+CROPS_VERSIONS_FD_RP   = vrp(f"data/crops/{OLD_VS}")
 
 IMG_MAIN_FD_RP         = vrp("data/img")
 CROP_PENDING_IMG_FD_RP = vrp("data/img/pending")
@@ -55,19 +55,19 @@ CROPPED_IMG_FD_RP      = vrp("data/img/cropped")
 IMG_VERSIONS_FD_RP     = vrp(f"data/img/{OLD_VS}")
 
 
-LABELS_MAIN_FD_RP     = vrp("data/labels")
-LABELS_FD_RP          = vrp("data/labels/labels")
-LABELS_REF_FD_RP      = vrp("data/labels/label_ref")
-LABELS_VERSIONS_FD_RP = vrp(f"data/labels/{OLD_VS}")
+LABELS_MAIN_FD_RP      = vrp("data/labels")
+LABELS_FD_RP           = vrp("data/labels/labels")
+LABELS_REF_FD_RP       = vrp("data/labels/label_ref")
+LABELS_VERSIONS_FD_RP  = vrp(f"data/labels/{OLD_VS}")
 
 # * Inference
 
-INFERENCE_CROPS_MAIN_FD_RP = vrp("inference/crops")
+INFERENCE_CROPS_MAIN_FD_RP       = vrp("inference/crops")
 
 INFERENCE_IMG_MAIN_FD_RP         = vrp("inference/img")
 INFERENCE_CROP_PENDING_IMG_FD_RP = vrp("inference/img/pending")
 INFERENCE_CROPPED_IMG_FD_RP      = vrp("inference/img/cropped")
 
-INFERENCE_LABELS_MAIN_FD_RP = vrp("inference/labels")
-INFERENCE_LABELS_FD_RP      = vrp("inference/labels/labels")
-INFERENCE_LABELS_REF_FD_RP  = vrp("inference/labels/label_ref")
+INFERENCE_LABELS_MAIN_FD_RP      = vrp("inference/labels")
+INFERENCE_LABELS_FD_RP           = vrp("inference/labels/labels")
+INFERENCE_LABELS_REF_FD_RP       = vrp("inference/labels/label_ref")

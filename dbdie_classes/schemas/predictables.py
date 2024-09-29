@@ -2,13 +2,13 @@
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from dbdie_classes.base import Probability
+from dbdie_classes.base import Emoji, IsForKiller, LabelId, LabelName, Probability
 
 
 class ItemCreate(BaseModel):
     """Match item creation schema."""
 
-    name            : str
+    name            : LabelName
     type_id         : int
     dbd_version_str : str | None = None
     rarity_id       : int | None = None
@@ -19,22 +19,22 @@ class ItemOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id             : int
-    name           : str
-    proba          : Probability | None = None
+    id             : LabelId
+    name           : LabelName
     type_id        : int
     dbd_version_id : int | None
     rarity_id      : int | None
+    proba          : Probability | None = None
 
 
 class AddonCreate(BaseModel):
     """Item-or-power addon creation schema."""
 
-    name            : str
-    type_id         : int
-    dbd_version_str : str | None = None
-    item_id         : int | None = None
-    rarity_id       : int | None = None
+    name            : LabelName
+    type_id         :     int
+    dbd_version_str :     str | None = None
+    item_id         : LabelId | None = None
+    rarity_id       :     int | None = None
 
 
 class AddonOut(BaseModel):
@@ -42,30 +42,30 @@ class AddonOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id              : int
-    name            : str
+    id              : LabelId
+    name            : LabelName
+    type_id         :     int
+    dbd_version_id  :     int | None
+    item_id         : LabelId | None
+    rarity_id       :     int | None
     proba           : Probability | None = None
-    type_id         : int
-    dbd_version_id  : int | None
-    item_id         : int | None
-    rarity_id       : int | None
 
 
 class CharacterCreate(BaseModel):
     """Character creation schema."""
 
-    name            : str
-    is_killer       : bool | None
-    base_char_id    : int | None = None  # Support for legendary outfits
-    dbd_version_str : str | None = None
-    common_name     : str | None = None
-    emoji           : str | None = None
-    power_id        : int | None = None
+    name            : LabelName
+    is_killer       : IsForKiller
+    base_char_id    : LabelId | None = None  # Support for legendary outfits
+    dbd_version_str :     str | None = None
+    common_name     :     str | None = None
+    emoji           :   Emoji | None = None
+    power_id        : LabelId | None = None
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len_le_4(cls, emoji: str) -> str:
-        assert len(emoji) <= 4, "Emoji character-equivalence must be as most 4"
+    def emoji_len(cls, emoji: str) -> Emoji:
+        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
         return emoji
 
 
@@ -74,29 +74,29 @@ class CharacterOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id             : int
-    name           : str
+    id             : LabelId
+    name           : LabelName
+    is_killer      : IsForKiller
+    base_char_id   : LabelId | None
+    dbd_version_id :     int | None
+    common_name    :     str | None
+    emoji          :   Emoji | None
+    power_id       : LabelId | None
     proba          : Probability | None = None
-    is_killer      : bool | None
-    base_char_id   : int | None
-    dbd_version_id : int | None
-    common_name    : str | None
-    emoji          : str | None
-    power_id       : int | None
 
 
 class PerkCreate(BaseModel):
     """Perk creation schema."""
 
-    name            : str
-    character_id    : int
-    dbd_version_str : str | None = None
-    emoji           : str | None = None
+    name            : LabelName
+    character_id    : LabelId
+    dbd_version_str :     str | None = None
+    emoji           :   Emoji | None = None
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len_le_4(cls, emoji: str) -> str:
-        assert len(emoji) <= 4, "Emoji character-equivalence must be as most 4"
+    def emoji_len(cls, emoji: str) -> Emoji:
+        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
         return emoji
 
 
@@ -105,12 +105,12 @@ class PerkOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id             : int
-    name           : str
+    id             : LabelId
+    name           : LabelName
+    character_id   : LabelId
+    dbd_version_id :     int | None
+    emoji          :   Emoji | None
     proba          : Probability | None = None
-    character_id   : int
-    dbd_version_id : int | None
-    emoji          : str | None
 
 
 class OfferingCreate(BaseModel):
@@ -118,9 +118,9 @@ class OfferingCreate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    name            : str
+    name            : LabelName
     type_id         : int
-    user_id         : int
+    user_id         : LabelId
     dbd_version_str : str | None = None
     rarity_id       : int | None = None
 
@@ -130,13 +130,13 @@ class OfferingOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id             : int
-    name           : str
-    proba          : Probability | None = None
+    id             : LabelId
+    name           : LabelName
     type_id        : int
-    user_id        : int
+    user_id        : LabelId
     dbd_version_id : int | None
     rarity_id      : int | None
+    proba          : Probability | None = None
 
 
 class StatusCreate(BaseModel):
@@ -144,15 +144,15 @@ class StatusCreate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    name            : str
-    character_id    : int
-    dbd_version_str : str | None = None
-    emoji           : str | None = None
+    name            : LabelName
+    character_id    : LabelId
+    dbd_version_str :     str | None = None
+    emoji           :   Emoji | None = None
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len_le_4(cls, emoji: str) -> str:
-        assert len(emoji) <= 4, "Emoji character-equivalence must be as most 4"
+    def emoji_len(cls, emoji: str) -> Emoji:
+        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
         return emoji
 
 
@@ -161,10 +161,10 @@ class StatusOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id             : int
-    name           : str
+    id             : LabelId
+    name           : LabelName
+    character_id   : LabelId
+    is_dead        :    bool | None
+    dbd_version_id :     int | None
+    emoji          :   Emoji | None
     proba          : Probability | None = None
-    character_id   : int
-    is_dead        : bool | None
-    dbd_version_id : int | None
-    emoji          : str | None

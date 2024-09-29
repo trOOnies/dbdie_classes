@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-from dbdie_classes.options import MODEL_TYPE
+from dbdie_classes.options import MODEL_TYPE as MT
 
 if TYPE_CHECKING:
     from pandas import Series
@@ -22,13 +22,13 @@ PERKS_KILLER     = "NoKillerPerk"
 PERKS_SURV       = "NoSurvPerk"
 STATUS           = "NoStatus"
 
-BY_MODEL_TYPE = {
-    MODEL_TYPE.ADDONS    : [ADDONS_SURV, ADDONS_KILLER],
-    MODEL_TYPE.CHARACTER : [CHARACTER_SURV, CHARACTER_KILLER],
-    MODEL_TYPE.ITEM      : [ITEM_SURV, ITEM_KILLER],
-    MODEL_TYPE.OFFERING  : [OFFERING_SURV, OFFERING_KILLER],
-    MODEL_TYPE.PERKS     : [PERKS_SURV, PERKS_KILLER],
-    MODEL_TYPE.STATUS    : [STATUS],
+BY_MT = {
+    MT.ADDONS    : [ADDONS_SURV, ADDONS_KILLER],
+    MT.CHARACTER : [CHARACTER_SURV, CHARACTER_KILLER],
+    MT.ITEM      : [ITEM_SURV, ITEM_KILLER],
+    MT.OFFERING  : [OFFERING_SURV, OFFERING_KILLER],
+    MT.PERKS     : [PERKS_SURV, PERKS_KILLER],
+    MT.STATUS    : [STATUS],
 }
 ALL_KILLER = [
     ADDONS_KILLER,
@@ -59,12 +59,12 @@ ALL = [
 ]
 
 INT_IDS: dict["ModelType", list["LabelId"]] = {
-    MODEL_TYPE.ADDONS    : [1, 0],  # surv, killer
-    MODEL_TYPE.CHARACTER : [2, 1, 0],  # surv, killer, all
-    MODEL_TYPE.ITEM      : [1, 0],
-    MODEL_TYPE.OFFERING  : [1, 0],
-    MODEL_TYPE.PERKS     : [1, 0],
-    MODEL_TYPE.STATUS    : [0, 1],
+    MT.ADDONS    : [1, 0],  # surv, killer
+    MT.CHARACTER : [2, 1, 0],  # surv, killer, all
+    MT.ITEM      : [1, 0],
+    MT.OFFERING  : [1, 0],
+    MT.PERKS     : [1, 0],
+    MT.STATUS    : [0, 1],
 }
 
 

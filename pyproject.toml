@@ -26,7 +26,10 @@ optional-dependencies.test = { file = ["requirements-test.txt"] }
 minversion = "6.0"
 
 [tool.coverage.run]
-omit = ["dbdie_classes/constants.py", "dbdie_classes/options/*.py"]
+omit = [
+    "dbdie_classes/base.py",
+    # "dbdie_classes/options/*.py",
+]
 
 [project.scripts]
 my-script = "dbdie_classes.module:function"

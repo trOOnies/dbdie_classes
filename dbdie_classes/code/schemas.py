@@ -14,7 +14,7 @@ ADDONS_IDS = {"none": 0, PT.KILLER: 1, "base": (2, 3, 4, 5, 6)}
 
 
 def check_killer_consistency(
-    is_killer,
+    is_killer: bool,
     obj: Union["OfferingOut", "PerkOut"],
 ) -> bool:
     return obj.ifk is None or (obj.ifk == is_killer)

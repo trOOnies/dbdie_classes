@@ -1,21 +1,25 @@
 """DBDIE classes for extract purposes."""
 
-from dataclasses import dataclass
+from __future__ import annotations
 
-from dbdie_classes.base import CropCoordsRaw, PlayerId
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dbdie_classes.base import CropCoordsRaw, ImgSize, LabelId, PlayerId
 
 
 @dataclass(eq=True)
 class CropCoords:
     """Crop coordinates in relation to its source image or crop."""
 
-    left: int
-    top: int
-    right: int
+    left:   int
+    top:    int
+    right:  int
     bottom: int
-    index: int = 0
+    index:  int = 0
 
-    def raw(self) -> CropCoordsRaw:
+    def raw(self) -> "CropCoordsRaw":
         return (self.left, self.top, self.right, self.bottom)
 
     def __iter__(self):
@@ -30,14 +34,14 @@ class CropCoords:
         return result
 
     @property
-    def shape(self) -> tuple[int, int]:
+    def shape(self) -> "ImgSize":
         return (self.right - self.left, self.bottom - self.top)
 
     @property
     def size(self) -> int:
         return (self.right - self.left) * (self.bottom - self.top)
 
-    def is_fully_inside(self, cc) -> bool:
+    def is_fully_inside(self, cc: CropCoords) -> bool:
         """Checks if the crop is fully inside the 'cc' crop."""
         return (
             (cc.left <= self.left)
@@ -46,7 +50,7 @@ class CropCoords:
             and (self.bottom <= cc.bottom)
         )
 
-    def check_overlap(self, cc) -> int:
+    def check_overlap(self, cc: CropCoords) -> bool:
         """Checks if 2 crops of the SAME SIZE overlap."""
         return not (
             (cc.right <= self.left)
@@ -60,14 +64,15 @@ class CropCoords:
 class PlayerInfo:
     """Integer-encoded DBD information of a player snippet."""
 
-    character_id: int
-    perks_ids: tuple[int, int, int, int]
-    item_id: int
-    addons_ids: tuple[int, int]
-    offering_id: int
-    status_id: int
-    points: int
+    character_id: "LabelId"
+    perks_ids:    tuple["LabelId", "LabelId", "LabelId", "LabelId"]
+    item_id:      "LabelId"
+    addons_ids:   tuple["LabelId", "LabelId"]
+    offering_id:  "LabelId"
+    status_id:    "LabelId"
+    points:       int
+    prestige:     int
 
 
-PlayersCropCoords = dict[PlayerId, CropCoords]
-PlayersInfoDict = dict[PlayerId, PlayerInfo]
+PlayersCropCoords = dict["PlayerId", CropCoords]
+PlayersInfoDict = dict["PlayerId", PlayerInfo]

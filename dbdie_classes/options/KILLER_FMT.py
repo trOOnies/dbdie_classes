@@ -1,15 +1,20 @@
 """Killer full model types."""
 
+from typing import TYPE_CHECKING
+
 from dbdie_classes.options import MODEL_TYPE as MT
-from dbdie_classes.options.PLAYER_TYPE import KILLER as PT_KILLER
+from dbdie_classes.options.PLAYER_TYPE import KILLER
 
-ADDONS    = f"{MT.ADDONS}__{PT_KILLER}"
-CHARACTER = f"{MT.CHARACTER}__{PT_KILLER}"
-ITEM      = f"{MT.ITEM}__{PT_KILLER}"
-OFFERING  = f"{MT.OFFERING}__{PT_KILLER}"
-PERKS     = f"{MT.PERKS}__{PT_KILLER}"
+if TYPE_CHECKING:
+    from dbdie_classes.base import FullModelType
 
-ALL = [
+ADDONS    : "FullModelType" = f"{MT.ADDONS}__{KILLER}"
+CHARACTER : "FullModelType" = f"{MT.CHARACTER}__{KILLER}"
+ITEM      : "FullModelType" = f"{MT.ITEM}__{KILLER}"
+OFFERING  : "FullModelType" = f"{MT.OFFERING}__{KILLER}"
+PERKS     : "FullModelType" = f"{MT.PERKS}__{KILLER}"
+
+ALL: list["FullModelType"] = [
     ADDONS,
     CHARACTER,
     ITEM,
