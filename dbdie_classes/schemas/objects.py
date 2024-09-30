@@ -1,7 +1,11 @@
 """Pydantic schemas for class objects related to DBDIE."""
 
+from __future__ import annotations
+
 import datetime as dt
 from pydantic import BaseModel, Field
+
+TOTAL_VALID_FMTS = 13
 
 
 class UserCreate(BaseModel):
@@ -47,7 +51,7 @@ class FullModelTypeCreate(BaseModel):
 
     name:          str
     model_type:    str
-    is_for_killer: bool
+    is_for_killer: bool | None
 
 
 class FullModelTypeOut(BaseModel):
@@ -56,20 +60,26 @@ class FullModelTypeOut(BaseModel):
     id:            int
     name:          str
     model_type:    str
-    is_for_killer: bool
+    is_for_killer: bool | None
 
 
 class ModelCreate(BaseModel):
     """DBDIE IEModel create schema."""
 
-    name:             str
-    user_id:          int
-    fmt_id:           int  # TODO: ?
-    cropper_swarm_id: int
-    dbdv_min_id:      int
-    dbdv_max_id:      int | None
-    special_mode:     bool | None = None
-    trained:          bool
+    name:              str
+    user_id:           int
+    fmt_id:            int  # TODO: ?
+    cropper_swarm_id:  int
+    dbdv_min_id:       int
+    dbdv_max_id:       int | None
+    special_mode:      bool | None = None
+    date_created:      str | None = None
+    date_modified:     str | None = None
+    date_last_trained: str | None
+
+    def model_post_init(self, __context) -> None:
+        if self.date_last_trained is None:
+            self.date_last_trained = dt.date.today().strftime("%Y-%m-%d")
 
 
 class ModelOut(BaseModel):
@@ -91,25 +101,36 @@ class ModelOut(BaseModel):
 class ExtractorModelsIds(BaseModel):
     """Ids of the IEModels of an InfoExtractor."""
 
-    addons:    int | None = Field(None, ge=0)
-    character: int | None = Field(None, ge=0)
-    item:      int | None = Field(None, ge=0)
-    offering:  int | None = Field(None, ge=0)
-    perks:     int | None = Field(None, ge=0)
-    points:    int | None = Field(None, ge=0)
-    prestige:  int | None = Field(None, ge=0)
-    status:    int | None = Field(None, ge=0)
+    mid_0:  int | None = Field(None, ge=0)
+    mid_1:  int | None = Field(None, ge=0)
+    mid_2:  int | None = Field(None, ge=0)
+    mid_3:  int | None = Field(None, ge=0)
+    mid_4:  int | None = Field(None, ge=0)
+    mid_5:  int | None = Field(None, ge=0)
+    mid_6:  int | None = Field(None, ge=0)
+    mid_7:  int | None = Field(None, ge=0)
+    mid_8:  int | None = Field(None, ge=0)
+    mid_9:  int | None = Field(None, ge=0)
+    mid_10: int | None = Field(None, ge=0)
+    mid_11: int | None = Field(None, ge=0)
+    mid_12: int | None = Field(None, ge=0)
 
+    @property
     def ids(self) -> list[int | None]:
         return [
-            self.addons,
-            self.character,
-            self.item,
-            self.offering,
-            self.perks,
-            self.points,
-            self.prestige,
-            self.status,
+            self.mid_0,
+            self.mid_1,
+            self.mid_2,
+            self.mid_3,
+            self.mid_4,
+            self.mid_5,
+            self.mid_6,
+            self.mid_7,
+            self.mid_8,
+            self.mid_9,
+            self.mid_10,
+            self.mid_11,
+            self.mid_12,
         ]
 
     def any(self) -> bool:
@@ -119,32 +140,27 @@ class ExtractorModelsIds(BaseModel):
         return all(mid is not None for mid in self.ids)
 
     def to_sql_cols(self) -> dict:
-        return {
-            "mid_addons": self.addons,
-            "mid_character": self.character,
-            "mid_item": self.item,
-            "mid_offering": self.offering,
-            "mid_perks": self.perks,
-            "mid_points": self.points,
-            "mid_prestige": self.prestige,
-            "mid_status": self.status,
-        }
+        return {f"mid_{i}": mid for i, mid in enumerate(self.ids)}
 
 
 class ExtractorCreate(BaseModel):
     """DBDIE InfoExtractor create schema."""
 
-    name:             str
-    user_id:          int
-    dbdv_min_id:      int
-    dbdv_max_id:      int | None
-    special_mode:     bool | None = None
-    cropper_swarm_id: int
-    models_ids:       ExtractorModelsIds
-    trained:          bool
+    name:                str
+    user_id:             int
+    dbdv_min_id:         int
+    dbdv_max_id:         int | None
+    special_mode:        bool | None = None
+    cropper_swarm_id:    int
+    models_ids:          ExtractorModelsIds
+    date_created:        str | None = None
+    date_modified:       str | None = None
+    date_last_trained:   str | None
 
     def model_post_init(self, __context) -> None:
         assert self.models_ids.any()
+        if self.date_last_trained is None:
+            self.date_last_trained = dt.date.today().strftime("%Y-%m-%d")
 
 
 class ExtractorOut(BaseModel):
@@ -161,3 +177,22 @@ class ExtractorOut(BaseModel):
     date_created:        dt.datetime
     date_modified:       dt.datetime
     date_last_trained:   dt.date
+
+    @classmethod
+    def from_sqla(cls, extractor) -> ExtractorOut:
+        return ExtractorOut(
+            id=extractor.id,
+            name=extractor.name,
+            user_id=extractor.user_id,
+            dbdv_min_id=extractor.dbdv_min_id,
+            dbdv_max_id=extractor.dbdv_max_id,
+            special_mode=extractor.special_mode,
+            cropper_swarm_id=extractor.cropper_swarm_id,
+            models_ids={
+                f"mid_{i}": getattr(extractor, f"mid_{i}")
+                for i in range(TOTAL_VALID_FMTS)
+            },
+            date_created=extractor.date_created,
+            date_modified=extractor.date_modified,
+            date_last_trained=extractor.date_last_trained,
+        )

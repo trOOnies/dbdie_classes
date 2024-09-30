@@ -1,6 +1,7 @@
 """All full model types."""
 
 from copy import deepcopy
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from dbdie_classes.options import MODEL_TYPE as MT
@@ -10,7 +11,9 @@ from dbdie_classes.options.KILLER_FMT import ALL as KILLER
 from dbdie_classes.options.SURV_FMT import ALL as SURV
 
 if TYPE_CHECKING:
-    from dbdie_classes.base import FullModelType, IsForKiller, ModelType, PlayerType
+    from dbdie_classes.base import (
+        FullModelType, IsForKiller, ModelType, PlayerType, PredTuple
+    )
 
 ALL = KILLER + SURV + COMMON
 ALL_DICT: dict["PlayerType", list["FullModelType"]] = {
@@ -55,3 +58,32 @@ def from_fmts(
         [tup[1] for tup in mts_and_pts],
         [tup[2] for tup in mts_and_pts],
     )
+
+
+@dataclass(eq=False, kw_only=True)
+class PredictableTypes:
+    """Predictable types: full model types, model types and killer boolean.
+    The 3 lists must be synched so that they can be looped at the same time.
+    """
+    fmts:  list["FullModelType"]
+    mts:   list["ModelType"]
+    ifks:  list["IsForKiller"]
+    index: int = 0  # ! DO NOT USE
+
+    def to_tuple(self) -> tuple[list["FullModelType"], list["ModelType"], list["IsForKiller"]]:
+        return self.fmts, self.mts, self.ifks
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> "PredTuple":
+        try:
+            pred_tuple = (
+                self.fmts[self.index],
+                self.mts[self.index],
+                self.ifks[self.index],
+            )
+        except IndexError:
+            raise StopIteration
+        self.index += 1
+        return pred_tuple

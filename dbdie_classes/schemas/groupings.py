@@ -261,9 +261,14 @@ class ManualChecksIn(BaseModel):
         assert not self.completed
 
         self.is_init = any(c is not None for c in self.checks)
-        conds = [(c is not None and c) for c in self.checks]
-        self.in_progress = any(conds)
-        self.completed = all(conds)
+
+        if not self.is_init:
+            self.in_progress = False
+            self.completed = False
+        else:
+            conds = [(c is not None and c) for c in self.checks]
+            self.in_progress = any(conds)
+            self.completed = all(conds)
 
     @property
     def checks(self) -> list[ManualCheck]:
