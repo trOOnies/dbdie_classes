@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, asdict
 
+from dbdie_classes.code.version import compare_dbdv_ranges, get_max_id
+
 
 @dataclass(frozen=True, eq=True, order=True)
 class DBDVersion:
@@ -68,17 +70,11 @@ class DBDVersionRange:
         return f">={self._id},<{self._max_id}" if self.bounded else f">={self._id}"
 
     def __eq__(self, other) -> bool:
-        if isinstance(other, DBDVersionRange):
-            if self._id != other._id:
-                return False
-            if not (self.bounded or other.bounded):
-                return True
-            return (
-                (self._max_id == other._max_id)
-                if (self.bounded == other.bounded)
-                else False
-            )
-        return False
+        return (
+            compare_dbdv_ranges(self, other)
+            if isinstance(other, DBDVersionRange)
+            else False
+        )
 
     def __contains__(self, v: DBDVersion) -> bool:
         """Checks if a DBDVersion is contained in the DBDVersionRange."""
@@ -88,14 +84,7 @@ class DBDVersionRange:
         """DBDVersions intersection."""
         _id = max(self._id, other._id)
         id = str(_id)
-
-        if not self.bounded:
-            max_id = other.max_id
-        elif not other.bounded:
-            max_id = self.max_id
-        else:
-            _max_id = min(self._max_id, other._max_id)
-            max_id = str(_max_id)
+        max_id = get_max_id(self, other)
 
         try:
             dbd_vr = DBDVersionRange(id, max_id)

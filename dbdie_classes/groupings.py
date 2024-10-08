@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from dbdie_classes.options.FMT import from_fmts
+
 if TYPE_CHECKING:
     from dbdie_classes.base import (
         FullModelType, IsForKiller, ModelType, PredTuple
@@ -33,6 +35,11 @@ class PredictableTuples:
     index: int = 0  # ! DO NOT USE
 
     @classmethod
+    def from_fmts(cls, fmts: list["FullModelType"]) -> PredictableTuples:
+        mts, _, ifks = from_fmts(fmts)
+        return cls.from_lists(fmts, mts, ifks)
+
+    @classmethod
     def from_lists(
         cls,
         fmts: list["FullModelType"],
@@ -40,7 +47,7 @@ class PredictableTuples:
         ifks: list["IsForKiller"],
     ) -> PredictableTuples:
         return cls(
-            [
+            pred_tuples=[
                 PredictableTuple(fmt=fmt, mt=mt, ifk=ifk)
                 for fmt, mt, ifk in zip(fmts, mts, ifks)
             ]
