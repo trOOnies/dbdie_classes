@@ -94,3 +94,6 @@ class DBDVersionRange:
             raise
 
         return dbd_vr
+
+    def to_list(self) -> list[str | None]:
+        return [self.id, self.max_id]
