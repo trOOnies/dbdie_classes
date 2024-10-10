@@ -9,7 +9,7 @@ from dbdie_classes.schemas.groupings import FullCharacterCreate
 
 BASE_FCC_DICT = {
     "name": "John Doe",
-    "is_killer": False,
+    "ifk": False,
     "power_name": None,
     "perk_names": ["Perk 1", "Perk 2", "Perk 3"],
     "addon_names": None,
@@ -29,7 +29,7 @@ class TestGroupings:
         d = deepcopy(BASE_FCC_DICT)
 
         for ifk in [False, True]:
-            d["is_killer"] = ifk
+            d["ifk"] = ifk
             d["power_name"] = "Scary lightning" if ifk else None
             d["addon_names"] = (
                 [f"Addon {i}" for i in range(20)] if ifk else None
@@ -63,7 +63,7 @@ class TestGroupings:
     def test_fcc_power_name_raises(self):
         d = deepcopy(BASE_FCC_DICT)
 
-        d["is_killer"] = True
+        d["ifk"] = True
         d["addon_names"] = [f"Addon {i}" for i in range(20)]
 
         with raises(ValidationError):
@@ -71,7 +71,7 @@ class TestGroupings:
         d["power_name"] = "Scary lightning"
         FullCharacterCreate(**d)
 
-        d["is_killer"] = False
+        d["ifk"] = False
         d["addon_names"] = None
 
         d["power_name"] = "Scary lightning"
@@ -83,7 +83,7 @@ class TestGroupings:
     def test_fcc_total_addons_raises(self):
         d = deepcopy(BASE_FCC_DICT)
 
-        d["is_killer"] = True
+        d["ifk"] = True
         d["power_name"] = "Scary lightning"
 
         with raises(ValidationError):
@@ -94,7 +94,7 @@ class TestGroupings:
         d["addon_names"] = [f"Addon {i}" for i in range(20)]
         FullCharacterCreate(**d)
 
-        d["is_killer"] = False
+        d["ifk"] = False
         d["power_name"] = None
         
         with raises(ValidationError):

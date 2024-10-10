@@ -22,7 +22,7 @@ class ItemOut(BaseModel):
     id             : LabelId
     name           : LabelName
     type_id        : int
-    dbd_version_id : int | None
+    dbdv_id        : int | None
     rarity_id      : int | None
     proba          : Probability | None = None
 
@@ -45,7 +45,7 @@ class AddonOut(BaseModel):
     id              : LabelId
     name            : LabelName
     type_id         :     int
-    dbd_version_id  :     int | None
+    dbdv_id         :     int | None
     item_id         : LabelId | None
     rarity_id       :     int | None
     proba           : Probability | None = None
@@ -55,7 +55,7 @@ class CharacterCreate(BaseModel):
     """Character creation schema."""
 
     name            : LabelName
-    is_killer       : IsForKiller
+    ifk             : IsForKiller
     base_char_id    : LabelId | None = None  # Support for legendary outfits
     dbd_version_str :     str | None = None
     common_name     :     str | None = None
@@ -76,9 +76,9 @@ class CharacterOut(BaseModel):
 
     id             : LabelId
     name           : LabelName
-    is_killer      : IsForKiller
+    ifk            : IsForKiller
     base_char_id   : LabelId | None
-    dbd_version_id :     int | None
+    dbdv_id        :     int | None
     common_name    :     str | None
     emoji          :   Emoji | None
     power_id       : LabelId | None
@@ -108,7 +108,7 @@ class PerkOut(BaseModel):
     id             : LabelId
     name           : LabelName
     character_id   : LabelId
-    dbd_version_id :     int | None
+    dbdv_id        :     int | None
     emoji          :   Emoji | None
     proba          : Probability | None = None
 
@@ -134,7 +134,7 @@ class OfferingOut(BaseModel):
     name           : LabelName
     type_id        : int
     user_id        : LabelId
-    dbd_version_id : int | None
+    dbdv_id        : int | None
     rarity_id      : int | None
     proba          : Probability | None = None
 
@@ -165,6 +165,6 @@ class StatusOut(BaseModel):
     name           : LabelName
     character_id   : LabelId
     is_dead        :    bool | None
-    dbd_version_id :     int | None
+    dbdv_id        :     int | None
     emoji          :   Emoji | None
     proba          : Probability | None = None

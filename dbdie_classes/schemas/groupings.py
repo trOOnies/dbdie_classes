@@ -54,7 +54,7 @@ class FullCharacterCreate(BaseModel):
     """
 
     name:              LabelName
-    is_killer:              bool
+    ifk:                    bool
     power_name:        LabelName | None
     perk_names:  list[LabelName]
     addon_names: list[LabelName] | None
@@ -78,13 +78,13 @@ class FullCharacterCreate(BaseModel):
     @model_validator(mode="after")
     def check_power_name(self) -> Self:
         assert (
-            (self.power_name is not None) == self.is_killer
+            (self.power_name is not None) == self.ifk
         ), "Killers must have a power name, survivors can't."
         return self
 
     @model_validator(mode="after")
     def check_total_addons(self) -> Self:
-        if self.is_killer:
+        if self.ifk:
             assert (
                 (self.addon_names is not None) and (len(self.addon_names) == 20)
             ), "You must provide exactly 20 killer addon names."
@@ -104,9 +104,9 @@ class FullCharacterOut(BaseModel):
     addons:     list[AddonOut] | None
     common_name:        str | None
     # proba:    Probability | None = None
-    is_killer:         IsForKiller
+    ifk:        IsForKiller
     base_char_id:   LabelId | None
-    dbd_version_id:     int | None
+    dbdv_id:            int | None
     emoji:            Emoji | None
 
 
@@ -212,27 +212,27 @@ class PlayerOut(BaseModel):
         self.check_consistency()
 
     @property
-    def is_killer(self) -> IsForKiller:
-        return self.character.is_killer
+    def ifk(self) -> IsForKiller:
+        return self.character.ifk
 
     def check_consistency(self) -> None:
         """Execute all consistency checks.
         It's purposefully separated so that in the future we could have
         customized self healing methods.
         """
-        if self.is_killer is None:
+        if self.ifk is None:
             self.is_consistent = False
         elif any(
-            not check_killer_consistency(self.is_killer, perk) for perk in self.perks
+            not check_killer_consistency(self.ifk, perk) for perk in self.perks
         ):
             self.is_consistent = False
-        elif not check_killer_consistency(self.is_killer, self.offering):
+        elif not check_killer_consistency(self.ifk, self.offering):
             self.is_consistent = False
-        elif not check_item_consistency(self.is_killer, self.item.type_id):
+        elif not check_item_consistency(self.ifk, self.item.type_id):
             self.is_consistent = False
-        elif not check_addons_consistency(self.is_killer, self.addons):
+        elif not check_addons_consistency(self.ifk, self.addons):
             self.is_consistent = False
-        elif not check_status_consistency(self.status.character_id, self.is_killer):
+        elif not check_status_consistency(self.status.character_id, self.ifk):
             self.is_consistent = False
         else:
             self.is_consistent = True
@@ -344,7 +344,7 @@ class MatchCreate(BaseModel):
     dbd_version:  DBDVersion | None = None
     special_mode:       bool | None = None
     user_id:             int | None = Field(None, ge=0)
-    extractor_id:        int | None = Field(None, ge=0)
+    extr_id:             int | None = Field(None, ge=0)
     kills:               int | None = Field(None, ge=0, le=4)
 
 
@@ -360,7 +360,7 @@ class MatchOut(BaseModel):
     date_created:  dt.datetime
     date_modified: dt.datetime
     user_id:       int | None
-    extractor_id:  int | None
+    extr_id:       int | None
 
 
 class VersionedFolderUpload(BaseModel):
@@ -386,7 +386,7 @@ class LabelsCreate(BaseModel):
     match_id:       MatchId
     player:         PlayerIn
     user_id:        int | None = None
-    extractor_id:   int | None = None
+    extr_id:        int | None = None
     manual_checks:  ManualChecksIn
 
 
@@ -397,7 +397,7 @@ class LabelsOut(BaseModel):
     player:         PlayerIn
     date_modified:  dt.datetime
     user_id:        int | None
-    extractor_id:   int | None
+    extr_id:        int | None
     manual_checks:  ManualChecksOut
 
     @classmethod
@@ -407,7 +407,7 @@ class LabelsOut(BaseModel):
             player=PlayerIn.from_labels(labels),
             date_modified=labels.date_modified,
             user_id=labels.user_id,
-            extractor_id=labels.extractor_id,
+            extr_id=labels.extr_id,
             manual_checks=ManualChecksOut.from_labels(labels),
         )
         return labels_out
@@ -433,11 +433,11 @@ class FullMatchOut(BaseModel):
 
     def check_consistency(self) -> None:
         """Execute all consistency checks."""
-        self.is_consistent = all(not pl.character.is_killer for pl in self.players[:4])
+        self.is_consistent = all(not pl.character.ifk for pl in self.players[:4])
         self.is_consistent = (
             self.is_consistent
-            and (self.players[4].character.is_killer is not None)
-            and self.players[4].character.is_killer
+            and (self.players[4].character.ifk is not None)
+            and self.players[4].character.ifk
         )
         self.is_consistent = self.is_consistent and all(
             pl.is_consistent for pl in self.players

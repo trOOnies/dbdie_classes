@@ -10,7 +10,7 @@ class ItemTypeOut(BaseModel):
     id            :   int
     name          :   str
     emoji         : Emoji | None
-    is_for_killer :  IsForKiller
+    ifk           :  IsForKiller
 
 
 class AddonTypeOut(BaseModel):
@@ -18,7 +18,7 @@ class AddonTypeOut(BaseModel):
     id            :   int
     name          :   str
     emoji         : Emoji | None
-    is_for_killer :  IsForKiller
+    ifk           :  IsForKiller
 
 
 class OfferingTypeOut(BaseModel):
@@ -26,7 +26,7 @@ class OfferingTypeOut(BaseModel):
     id            :   int
     name          :   str
     emoji         : Emoji | None
-    is_for_killer :  IsForKiller
+    ifk           :  IsForKiller
 
 
 class RarityCreate(BaseModel):

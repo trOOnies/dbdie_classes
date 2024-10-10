@@ -30,7 +30,7 @@ class CropperSwarmCreate(BaseModel):
     img_height:    int
     dbdv_min_id:   int
     dbdv_max_id:   int | None
-    is_for_killer: bool | None
+    ifk:           bool | None
 
 
 class CropperSwarmOut(BaseModel):
@@ -43,24 +43,24 @@ class CropperSwarmOut(BaseModel):
     img_height:    int
     dbdv_min_id:   int
     dbdv_max_id:   int | None
-    is_for_killer: bool | None
+    ifk:           bool | None
 
 
 class FullModelTypeCreate(BaseModel):
     """DBDIE full model type create schema."""
 
-    name:          str
-    model_type:    str
-    is_for_killer: bool | None
+    name: str
+    mt:   str
+    ifk:  bool | None
 
 
 class FullModelTypeOut(BaseModel):
     """DBDIE full model type output schema."""
 
-    id:            int
-    name:          str
-    model_type:    str
-    is_for_killer: bool | None
+    id:   int
+    name: str
+    mt:   str
+    ifk:  bool | None
 
 
 class ModelCreate(BaseModel):
@@ -69,7 +69,7 @@ class ModelCreate(BaseModel):
     name:              str
     user_id:           int
     fmt_id:            int  # TODO: ?
-    cropper_swarm_id:  int
+    cps_id:            int
     dbdv_min_id:       int
     dbdv_max_id:       int | None
     special_mode:      bool | None = None
@@ -89,7 +89,7 @@ class ModelOut(BaseModel):
     name:                str
     user_id:             int
     fmt_id:              int  # TODO: ?
-    cropper_swarm_id:    int
+    cps_id:              int
     dbdv_min_id:         int
     dbdv_max_id:         int | None
     special_mode:        bool | None
@@ -151,7 +151,7 @@ class ExtractorCreate(BaseModel):
     dbdv_min_id:         int
     dbdv_max_id:         int | None
     special_mode:        bool | None = None
-    cropper_swarm_id:    int
+    cps_id:              int
     models_ids:          ExtractorModelsIds
     date_created:        str | None = None
     date_modified:       str | None = None
@@ -172,7 +172,7 @@ class ExtractorOut(BaseModel):
     dbdv_min_id:         int
     dbdv_max_id:         int | None
     special_mode:        bool | None
-    cropper_swarm_id:    int
+    cps_id:              int
     models_ids:          ExtractorModelsIds
     date_created:        dt.datetime
     date_modified:       dt.datetime
@@ -187,7 +187,7 @@ class ExtractorOut(BaseModel):
             dbdv_min_id=extractor.dbdv_min_id,
             dbdv_max_id=extractor.dbdv_max_id,
             special_mode=extractor.special_mode,
-            cropper_swarm_id=extractor.cropper_swarm_id,
+            cps_id=extractor.cps_id,
             models_ids={
                 f"mid_{i}": getattr(extractor, f"mid_{i}")
                 for i in range(TOTAL_VALID_FMTS)

@@ -14,13 +14,13 @@ class MockAddon:
 
 
 class MockPredictable:
-    def __init__(self, is_for_killer: bool | None) -> None:
-        self.ifk = is_for_killer
+    def __init__(self, ifk: bool | None) -> None:
+        self.ifk = ifk
 
 
 class TestCodeSchemas:
     @mark.parametrize(
-        "exp,is_killer,addons_type_ids",
+        "exp,ifk,addons_type_ids",
         [
             (True,  True,  [0, 0]),
             (True,  True,  [0, 1]),
@@ -48,14 +48,14 @@ class TestCodeSchemas:
     def test_check_addons_consistency(
         self,
         exp,
-        is_killer,
+        ifk,
         addons_type_ids,
     ):
         addons = [MockAddon(ati) for ati in addons_type_ids]
-        assert exp == check_addons_consistency(is_killer, addons)
+        assert exp == check_addons_consistency(ifk, addons)
 
     @mark.parametrize(
-        "exp,is_killer,item_type_id",
+        "exp,ifk,item_type_id",
         [
             (False, True,  0),
             (True,  True,  1),
@@ -69,11 +69,11 @@ class TestCodeSchemas:
             (True,  False, 4),
         ],
     )
-    def test_check_item_consistency(self, exp, is_killer, item_type_id):
-        assert exp == check_item_consistency(is_killer, item_type_id)
+    def test_check_item_consistency(self, exp, ifk, item_type_id):
+        assert exp == check_item_consistency(ifk, item_type_id)
 
     @mark.parametrize(
-        "exp,is_killer,is_for_killer",
+        "exp,is_killer,ifk",
         [
             (True,  True,  True),
             (False, True,  False),
@@ -83,12 +83,12 @@ class TestCodeSchemas:
             (True,  False, None),
         ],
     )
-    def test_check_killer_consistency(self, exp, is_killer, is_for_killer):
-        predictable = MockPredictable(is_for_killer)
+    def test_check_killer_consistency(self, exp, is_killer, ifk):
+        predictable = MockPredictable(ifk)
         assert exp == check_killer_consistency(is_killer, predictable)
 
     @mark.parametrize(
-        "exp,status_character_id,is_killer",
+        "exp,status_character_id,ifk",
         [
             (True,  0, True),
             (True,  0, False),
@@ -102,6 +102,6 @@ class TestCodeSchemas:
         self,
         exp,
         status_character_id,
-        is_killer,
+        ifk,
     ):
-        assert exp == check_status_consistency(status_character_id, is_killer)
+        assert exp == check_status_consistency(status_character_id, ifk)
