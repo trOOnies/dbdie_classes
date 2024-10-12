@@ -2,32 +2,32 @@
 
 from pytest import mark, raises
 
-from dbdie_classes.version import DBDVersion, DBDVersionRange
+from dbdie_classes.schemas.helpers import DBDVersionOut, DBDVersionRange
 
 
 class TestDBDVersionRange:
     # * DBD Version
 
     def test_dbdversion_dunder_str(self):
-        dbdv = DBDVersion("8", "1", "1")
+        dbdv = DBDVersionOut("8", "1", "1")
         assert str(dbdv) == "8.1.1"
-        dbdv = DBDVersion("8", "1", "1a")
+        dbdv = DBDVersionOut("8", "1", "1a")
         assert str(dbdv) == "8.1.1a"
 
     def test_dbdversion_from_str(self):
-        dbvd1 = DBDVersion.from_str("8.5.0")
+        dbvd1 = DBDVersionOut.from_str("8.5.0")
         assert dbvd1.major == "8"
         assert dbvd1.minor == "5"
         assert dbvd1.patch == "0"
         assert dbvd1.is_not_ptb
 
-        dbvd2 = DBDVersion.from_str("8.5.0a")
+        dbvd2 = DBDVersionOut.from_str("8.5.0a")
         assert dbvd2.major == "8"
         assert dbvd2.minor == "5"
         assert dbvd2.patch == "0a"
         assert dbvd2.is_not_ptb
 
-        dbvd3 = DBDVersion.from_str("7.2.0-ptb")
+        dbvd3 = DBDVersionOut.from_str("7.2.0-ptb")
         assert dbvd3.major == "7"
         assert dbvd3.minor == "2"
         assert dbvd3.patch == "0"
@@ -53,8 +53,8 @@ class TestDBDVersionRange:
         ],
     )
     def test_dbdversion_dunder_ineq(self, ineq, v1, v2):
-        dbdv1 = DBDVersion.from_str(v1)
-        dbdv2 = DBDVersion.from_str(v2)
+        dbdv1 = DBDVersionOut.from_str(v1)
+        dbdv2 = DBDVersionOut.from_str(v2)
         if ineq == -1:
             assert dbdv1 > dbdv2
         elif ineq == 0:
@@ -70,7 +70,7 @@ class TestDBDVersionRange:
         for dbd_vr in [
             DBDVersionRange("7.5.0"),
             DBDVersionRange.from_dbd_versions(
-                DBDVersion("7", "5", "0"),
+                DBDVersionOut("7", "5", "0"),
                 None,
             ),
         ]:
@@ -83,8 +83,8 @@ class TestDBDVersionRange:
         for dbd_vr_2 in [
             DBDVersionRange("7.5.0", "8.0.0"),
             DBDVersionRange.from_dbd_versions(
-                DBDVersion("7", "5", "0"),
-                DBDVersion("8", "0", "0"),
+                DBDVersionOut("7", "5", "0"),
+                DBDVersionOut("8", "0", "0"),
             ),
         ]:
             assert dbd_vr_2.bounded
@@ -98,8 +98,8 @@ class TestDBDVersionRange:
         for dbd_vr_3 in [
             DBDVersionRange("8.0.0-ptb", "8.0.0"),
             DBDVersionRange.from_dbd_versions(
-                DBDVersion("8", "0", "0", is_not_ptb=False),
-                DBDVersion("8", "0", "0"),
+                DBDVersionOut("8", "0", "0", is_not_ptb=False),
+                DBDVersionOut("8", "0", "0"),
             ),
         ]:
             assert dbd_vr_3.bounded
@@ -115,24 +115,24 @@ class TestDBDVersionRange:
             DBDVersionRange("8.0.0", "8.0.0")
         with raises(AssertionError):
             DBDVersionRange.from_dbd_versions(
-                DBDVersion("8", "0", "0"),
-                DBDVersion("8", "0", "0"),
+                DBDVersionOut("8", "0", "0"),
+                DBDVersionOut("8", "0", "0"),
             )
 
         with raises(AssertionError):
             DBDVersionRange("8.0.0", "7.5.0")
         with raises(AssertionError):
             DBDVersionRange.from_dbd_versions(
-                DBDVersion("8", "0", "0"),
-                DBDVersion("7", "5", "0"),
+                DBDVersionOut("8", "0", "0"),
+                DBDVersionOut("7", "5", "0"),
             )
 
         with raises(AssertionError):
             DBDVersionRange("8.0.0", "8.0.0-ptb")
         with raises(AssertionError):
             DBDVersionRange.from_dbd_versions(
-                DBDVersion("8", "0", "0"),
-                DBDVersion("8", "0", "0", is_not_ptb=False),
+                DBDVersionOut("8", "0", "0"),
+                DBDVersionOut("8", "0", "0", is_not_ptb=False),
             )
 
     def test_dbdvr_dunder_str(self):
@@ -180,11 +180,11 @@ class TestDBDVersionRange:
     )
     def test_dbdvr_dunder_contains(self, cont, cont_unbounded, v_min, v_max, v):
         dbdvr = DBDVersionRange(v_min, v_max)
-        dbdv = DBDVersion(*v.split("."))
+        dbdv = DBDVersionOut(*v.split("."))
         assert (dbdv in dbdvr) == cont
 
         dbdvr = DBDVersionRange(v_min)
-        dbdv = DBDVersion(*v.split("."))
+        dbdv = DBDVersionOut(*v.split("."))
         assert (dbdv in dbdvr) == cont_unbounded
 
     @mark.parametrize(

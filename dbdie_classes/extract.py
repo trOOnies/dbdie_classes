@@ -20,6 +20,7 @@ class CropCoords:
     index:  int = 0
 
     def raw(self) -> "CropCoordsRaw":
+        """Get crop in raw fom: 4-int-tuple LTRB."""
         return (self.left, self.top, self.right, self.bottom)
 
     def __iter__(self):
@@ -35,14 +36,16 @@ class CropCoords:
 
     @property
     def shape(self) -> "ImgSize":
+        """Shape of crop as a (width, height) tuple."""
         return (self.right - self.left, self.bottom - self.top)
 
     @property
     def size(self) -> int:
+        """Size of crop in square px."""
         return (self.right - self.left) * (self.bottom - self.top)
 
     def is_fully_inside(self, cc: CropCoords) -> bool:
-        """Checks if the crop is fully inside the 'cc' crop."""
+        """Check if the crop is fully inside the 'cc' crop."""
         return (
             (cc.left <= self.left)
             and (self.right <= cc.right)
@@ -51,7 +54,7 @@ class CropCoords:
         )
 
     def check_overlap(self, cc: CropCoords) -> bool:
-        """Checks if 2 crops of the SAME SIZE overlap."""
+        """Check if 2 crops of the SAME SIZE overlap."""
         return not (
             (cc.right <= self.left)
             or (self.right <= cc.left)
@@ -75,4 +78,4 @@ class PlayerInfo:
 
 
 PlayersCropCoords = dict["PlayerId", CropCoords]
-PlayersInfoDict = dict["PlayerId", PlayerInfo]
+PlayersInfoDict   = dict["PlayerId", PlayerInfo]

@@ -14,11 +14,10 @@ class UserCreate(BaseModel):
     name: str
 
 
-class UserOut(BaseModel):
+class UserOut(UserCreate):
     """DBDIE user output schema."""
 
     id: int
-    name: str
 
 
 class CropperSwarmCreate(BaseModel):
@@ -33,17 +32,10 @@ class CropperSwarmCreate(BaseModel):
     ifk:           bool | None
 
 
-class CropperSwarmOut(BaseModel):
+class CropperSwarmOut(CropperSwarmCreate):
     """DBDIE CropperSwarm output schema."""
 
-    id:            int
-    name:          str
-    user_id:       int
-    img_width:     int
-    img_height:    int
-    dbdv_min_id:   int
-    dbdv_max_id:   int | None
-    ifk:           bool | None
+    id: int
 
 
 class FullModelTypeCreate(BaseModel):
@@ -54,13 +46,10 @@ class FullModelTypeCreate(BaseModel):
     ifk:  bool | None
 
 
-class FullModelTypeOut(BaseModel):
+class FullModelTypeOut(FullModelTypeCreate):
     """DBDIE full model type output schema."""
 
-    id:   int
-    name: str
-    mt:   str
-    ifk:  bool | None
+    id: int
 
 
 class ModelCreate(BaseModel):
@@ -68,13 +57,13 @@ class ModelCreate(BaseModel):
 
     name:              str
     user_id:           int
-    fmt_id:            int  # TODO: ?
+    fmt_id:            int
     cps_id:            int
     dbdv_min_id:       int
     dbdv_max_id:       int | None
-    special_mode:      bool | None = None
-    date_created:      str | None = None
-    date_modified:     str | None = None
+    special_mode:      bool | None
+    date_created:      str | None
+    date_modified:     str | None
     date_last_trained: str | None
 
     def model_post_init(self, __context) -> None:
@@ -82,20 +71,10 @@ class ModelCreate(BaseModel):
             self.date_last_trained = dt.date.today().strftime("%Y-%m-%d")
 
 
-class ModelOut(BaseModel):
+class ModelOut(ModelCreate):
     """DBDIE IEModel output schema."""
 
-    id:                  int
-    name:                str
-    user_id:             int
-    fmt_id:              int  # TODO: ?
-    cps_id:              int
-    dbdv_min_id:         int
-    dbdv_max_id:         int | None
-    special_mode:        bool | None
-    date_created:        dt.datetime
-    date_modified:       dt.datetime
-    date_last_trained:   dt.date
+    id: int
 
 
 class ExtractorModelsIds(BaseModel):
@@ -146,16 +125,16 @@ class ExtractorModelsIds(BaseModel):
 class ExtractorCreate(BaseModel):
     """DBDIE InfoExtractor create schema."""
 
-    name:                str
-    user_id:             int
-    dbdv_min_id:         int
-    dbdv_max_id:         int | None
-    special_mode:        bool | None = None
-    cps_id:              int
-    models_ids:          ExtractorModelsIds
-    date_created:        str | None = None
-    date_modified:       str | None = None
-    date_last_trained:   str | None
+    name:              str
+    user_id:           int
+    dbdv_min_id:       int
+    dbdv_max_id:       int | None
+    special_mode:      bool | None
+    cps_id:            int
+    models_ids:        ExtractorModelsIds
+    date_created:      str | None
+    date_modified:     str | None
+    date_last_trained: str | None
 
     def model_post_init(self, __context) -> None:
         assert self.models_ids.any()
@@ -163,20 +142,10 @@ class ExtractorCreate(BaseModel):
             self.date_last_trained = dt.date.today().strftime("%Y-%m-%d")
 
 
-class ExtractorOut(BaseModel):
+class ExtractorOut(ExtractorCreate):
     """DBDIE InfoExtractor output schema."""
 
-    id:                  int
-    name:                str
-    user_id:             int
-    dbdv_min_id:         int
-    dbdv_max_id:         int | None
-    special_mode:        bool | None
-    cps_id:              int
-    models_ids:          ExtractorModelsIds
-    date_created:        dt.datetime
-    date_modified:       dt.datetime
-    date_last_trained:   dt.date
+    id: int
 
     @classmethod
     def from_sqla(cls, extractor) -> ExtractorOut:

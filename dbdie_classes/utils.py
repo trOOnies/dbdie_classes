@@ -1,9 +1,11 @@
+"""Utils script."""
+
 from typing import Any
 from copy import deepcopy
 
 
 def pls(item: str, length: int) -> str:
-    """Plural letter 's' friendly count"""
+    """Plural letter 's' friendly count."""
     return f"{length} {item}{'s' if length != 1 else ''}"
 
 
@@ -12,7 +14,7 @@ def filter_multitype(
     default: list[Any],
     possible_values: list[Any] | set[Any] | None = None,
 ) -> list[Any]:
-    """Centralized function to convert some type options to a list"""
+    """Centralized function to convert some type options to a list."""
     if items is None:
         return deepcopy(default)
     elif isinstance(items, str):

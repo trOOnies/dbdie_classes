@@ -12,12 +12,12 @@ if TYPE_CHECKING:
 
 
 def absp(rel_path: "RelPath") -> "Path":
-    """Convert DBDIE relative path to absolute path"""
+    """Convert DBDIE relative path to absolute path."""
     return join(environ["DBDIE_MAIN_FD"], rel_path)
 
 
 def relp(abs_path: "Path") -> "RelPath":
-    """Convert DBDIE absolute path to relative path"""
+    """Convert DBDIE absolute path to relative path."""
     return relpath(abs_path, environ["DBDIE_MAIN_FD"])
 
 

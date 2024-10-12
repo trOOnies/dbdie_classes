@@ -19,7 +19,6 @@ from dbdie_classes.base import (
     ModelType,
     PlayerId,
 )
-from dbdie_classes.version import DBDVersion
 from dbdie_classes.code.groupings import (
     check_strict, labels_model_to_checks, predictables_for_sqld
 )
@@ -58,7 +57,7 @@ class FullCharacterCreate(BaseModel):
     power_name:        LabelName | None
     perk_names:  list[LabelName]
     addon_names: list[LabelName] | None
-    dbd_version:      DBDVersion
+    dbd_version:   DBDVersionOut
     common_name:             str
     emoji:                 Emoji
 
@@ -102,12 +101,12 @@ class FullCharacterOut(BaseModel):
     power:             ItemOut | None
     perks:       list[PerkOut]
     addons:     list[AddonOut] | None
-    common_name:        str | None
-    # proba:    Probability | None = None
-    ifk:        IsForKiller
-    base_char_id:   LabelId | None
-    dbdv_id:            int | None
-    emoji:            Emoji | None
+    common_name:           str | None
+    # proba:       Probability | None = None
+    ifk:           IsForKiller
+    base_char_id:      LabelId | None
+    dbdv_id:               int | None
+    emoji:               Emoji | None
 
 
 # * Players
@@ -339,34 +338,27 @@ class ManualChecksOut(BaseModel):
 class MatchCreate(BaseModel):
     """DBD match creation schema."""
 
-    filename:       Filename
-    match_date:      dt.date | None = None
-    dbd_version:  DBDVersion | None = None
-    special_mode:       bool | None = None
-    user_id:             int | None = Field(None, ge=0)
-    extr_id:             int | None = Field(None, ge=0)
-    kills:               int | None = Field(None, ge=0, le=4)
+    filename:     Filename
+    match_date:   dt.date | None
+    dbdv_id:      int | None
+    special_mode: bool | None
+    user_id:      int | None = Field(..., ge=0)
+    extr_id:      int | None = Field(..., ge=0)
+    kills:        int | None = Field(..., ge=0, le=4)
 
 
-class MatchOut(BaseModel):
+class MatchOut(MatchCreate):
     """DBD match output schema."""
 
     id:            MatchId
-    filename:      Filename
-    match_date:    dt.date | None
-    dbd_version:   DBDVersionOut | None
-    special_mode:  bool | None
-    kills:         int | None
     date_created:  dt.datetime
     date_modified: dt.datetime
-    user_id:       int | None
-    extr_id:       int | None
 
 
 class VersionedFolderUpload(BaseModel):
     """DBD-versioned folder to upload."""
 
-    dbd_version:  DBDVersion
+    dbd_version:  DBDVersionOut
     special_mode: Optional[bool] = None
 
 
@@ -390,14 +382,10 @@ class LabelsCreate(BaseModel):
     manual_checks:  ManualChecksIn
 
 
-class LabelsOut(BaseModel):
+class LabelsOut(LabelsCreate):
     """Labels output schema."""
 
-    match_id:       MatchId
-    player:         PlayerIn
     date_modified:  dt.datetime
-    user_id:        int | None
-    extr_id:        int | None
     manual_checks:  ManualChecksOut
 
     @classmethod
@@ -417,7 +405,7 @@ class FullMatchOut(BaseModel):
     """Labeled DBD match output schema."""
 
     # TODO
-    version:       DBDVersion
+    version:       DBDVersionOut
     players:       list[PlayerOut]
     kills:         int = Field(-1, ge=-1, le=4)  # ! do not use
     is_consistent: bool = True  # ! do not use
