@@ -14,7 +14,7 @@ if TYPE_CHECKING:
         FullModelType, IsForKiller, ModelType, PlayerType
     )
 
-ALL = KILLER + SURV + COMMON
+ALL = KILLER + SURV + COMMON  # ! order is maintained for SQL
 ALL_DICT: dict["PlayerType", list["FullModelType"]] = {
     None: COMMON,
     PT.KILLER: KILLER,

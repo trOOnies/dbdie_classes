@@ -14,4 +14,4 @@ PRESTIGE : "FullModelType" = MT.PRESTIGE
 ALL: list["FullModelType"] = [
     POINTS,
     PRESTIGE,
-]
+]  # ! order is maintained for SQL

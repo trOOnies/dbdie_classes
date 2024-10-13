@@ -20,4 +20,4 @@ ALL: list["FullModelType"] = [
     ITEM,
     OFFERING,
     PERKS,
-]
+]  # ! order is maintained for SQL

@@ -4,8 +4,14 @@ from __future__ import annotations
 
 import datetime as dt
 from pydantic import BaseModel, Field
+from typing import TYPE_CHECKING
 
-TOTAL_VALID_FMTS = 13
+from dbdie_classes.options.FMT import ALL as ALL_FMT
+
+if TYPE_CHECKING:
+    from dbdie_classes.base import FullModelType
+
+TOTAL_VALID_FMTS = len(ALL_FMT)
 
 
 class UserCreate(BaseModel):
@@ -114,6 +120,16 @@ class ExtractorModelsIds(BaseModel):
     mid_10: int | None = Field(None, ge=0)
     mid_11: int | None = Field(None, ge=0)
     mid_12: int | None = Field(None, ge=0)
+
+    @classmethod
+    def from_fmt_dict(cls, fmt_dict: dict["FullModelType", int]) -> ExtractorModelsIds:
+        fmt_dict_ = {
+            fmt: (fmt_dict[fmt] if fmt in fmt_dict else None)
+            for fmt in ALL_FMT
+        }
+        return ExtractorModelsIds(
+            **{f"mid_{i}": mid for i, mid in enumerate(fmt_dict_.values())}
+        )
 
     @property
     def ids(self) -> list[int | None]:

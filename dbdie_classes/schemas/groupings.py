@@ -129,13 +129,13 @@ class PlayerIn(BaseModel):
     @classmethod
     def from_labels(cls, labels) -> PlayerIn:
         try:
-            perks = [labels.perk_0, labels.perk_1, labels.perk_2, labels.perk_3]
+            perks = [labels.perks_0, labels.perks_1, labels.perks_2, labels.perks_3]
             perks = perks if all(p is not None for p in perks) else None
         except AttributeError:
             perks = None
 
         try:
-            addons = [labels.addon_0, labels.addon_1]
+            addons = [labels.addons_0, labels.addons_1]
             addons = addons if all(a is not None for a in addons) else None
         except AttributeError:
             addons = None

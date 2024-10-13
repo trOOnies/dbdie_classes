@@ -3,9 +3,9 @@
 from dbdie_classes.options import MODEL_TYPE as MT
 
 CHARACTER = ["character"]
-PERKS     = ["perk_0", "perk_1", "perk_2", "perk_3"]
+PERKS     = ["perks_0", "perks_1", "perks_2", "perks_3"]
 ITEM      = ["item"]
-ADDONS    = ["addon_0", "addon_1"]
+ADDONS    = ["addons_0", "addons_1"]
 OFFERING  = ["offering"]
 STATUS    = ["status"]
 POINTS    = ["points"]
