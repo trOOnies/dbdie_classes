@@ -2,65 +2,52 @@
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from dbdie_classes.base import Emoji, IsForKiller, LabelId, LabelName, Probability
+from dbdie_classes.base import Emoji, IsForKiller, LabelId, LabelName
 
 
 class ItemCreate(BaseModel):
     """Match item creation schema."""
 
-    name            : LabelName
-    type_id         : int
-    dbd_version_str : str | None = None
-    rarity_id       : int | None = None
+    name      : LabelName
+    type_id   : int
+    dbdv_id   : str | None
+    rarity_id : int | None
 
 
-class ItemOut(BaseModel):
+class ItemOut(ItemCreate):
     """Match item output schema."""
 
+    id: LabelId
     model_config = ConfigDict(from_attributes=True)
-
-    id             : LabelId
-    name           : LabelName
-    type_id        : int
-    dbdv_id        : int | None
-    rarity_id      : int | None
-    proba          : Probability | None = None
 
 
 class AddonCreate(BaseModel):
     """Item-or-power addon creation schema."""
 
-    name            : LabelName
-    type_id         :     int
-    dbd_version_str :     str | None = None
-    item_id         : LabelId | None = None
-    rarity_id       :     int | None = None
+    name      : LabelName
+    type_id   :     int
+    dbdv_id   :     int | None
+    item_id   : LabelId | None
+    rarity_id :     int | None
 
 
-class AddonOut(BaseModel):
+class AddonOut(AddonCreate):
     """Item-or-power addon output schema."""
 
+    id: LabelId
     model_config = ConfigDict(from_attributes=True)
-
-    id              : LabelId
-    name            : LabelName
-    type_id         :     int
-    dbdv_id         :     int | None
-    item_id         : LabelId | None
-    rarity_id       :     int | None
-    proba           : Probability | None = None
 
 
 class CharacterCreate(BaseModel):
     """Character creation schema."""
 
-    name            : LabelName
-    ifk             : IsForKiller
-    base_char_id    : LabelId | None = None  # Support for legendary outfits
-    dbd_version_str :     str | None = None
-    common_name     :     str | None = None
-    emoji           :   Emoji | None = None
-    power_id        : LabelId | None = None
+    name         : LabelName
+    ifk          : IsForKiller
+    base_char_id : LabelId | None  # Support for legendary outfits
+    dbdv_id      :     int | None
+    common_name  :     str | None
+    emoji        :   Emoji | None
+    power_id     : LabelId | None
 
     @field_validator("emoji")
     @classmethod
@@ -69,29 +56,20 @@ class CharacterCreate(BaseModel):
         return emoji
 
 
-class CharacterOut(BaseModel):
+class CharacterOut(CharacterCreate):
     """Character output schema."""
 
+    id: LabelId
     model_config = ConfigDict(from_attributes=True)
-
-    id             : LabelId
-    name           : LabelName
-    ifk            : IsForKiller
-    base_char_id   : LabelId | None
-    dbdv_id        :     int | None
-    common_name    :     str | None
-    emoji          :   Emoji | None
-    power_id       : LabelId | None
-    proba          : Probability | None = None
 
 
 class PerkCreate(BaseModel):
     """Perk creation schema."""
 
-    name            : LabelName
-    character_id    : LabelId
-    dbd_version_str :     str | None = None
-    emoji           :   Emoji | None = None
+    name         : LabelName
+    character_id : LabelId
+    dbdv_id      :     int | None
+    emoji        :   Emoji | None
 
     @field_validator("emoji")
     @classmethod
@@ -100,54 +78,38 @@ class PerkCreate(BaseModel):
         return emoji
 
 
-class PerkOut(BaseModel):
+class PerkOut(PerkCreate):
     """Perk output schema."""
 
+    id: LabelId
     model_config = ConfigDict(from_attributes=True)
-
-    id             : LabelId
-    name           : LabelName
-    character_id   : LabelId
-    dbdv_id        :     int | None
-    emoji          :   Emoji | None
-    proba          : Probability | None = None
 
 
 class OfferingCreate(BaseModel):
     """Offering creation schema."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    name            : LabelName
-    type_id         : int
-    user_id         : LabelId
-    dbd_version_str : str | None = None
-    rarity_id       : int | None = None
+    name      : LabelName
+    type_id   : int
+    user_id   : LabelId
+    dbdv_id   : int | None
+    rarity_id : int | None
 
 
-class OfferingOut(BaseModel):
+class OfferingOut(OfferingCreate):
     """Offering output schema."""
 
+    id: LabelId
     model_config = ConfigDict(from_attributes=True)
-
-    id             : LabelId
-    name           : LabelName
-    type_id        : int
-    user_id        : LabelId
-    dbdv_id        : int | None
-    rarity_id      : int | None
-    proba          : Probability | None = None
 
 
 class StatusCreate(BaseModel):
     """Final player match status creation schema."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    name            : LabelName
-    character_id    : LabelId
-    dbd_version_str :     str | None = None
-    emoji           :   Emoji | None = None
+    name         : LabelName
+    character_id :   LabelId
+    is_dead      :      bool | None
+    dbdv_id      :       int | None
+    emoji        :     Emoji | None
 
     @field_validator("emoji")
     @classmethod
@@ -156,15 +118,8 @@ class StatusCreate(BaseModel):
         return emoji
 
 
-class StatusOut(BaseModel):
+class StatusOut(StatusCreate):
     """Final player match status output schema."""
 
+    id: LabelId
     model_config = ConfigDict(from_attributes=True)
-
-    id             : LabelId
-    name           : LabelName
-    character_id   : LabelId
-    is_dead        :    bool | None
-    dbdv_id        :     int | None
-    emoji          :   Emoji | None
-    proba          : Probability | None = None

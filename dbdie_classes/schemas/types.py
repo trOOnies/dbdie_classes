@@ -1,39 +1,54 @@
 """Pydantic schemas for the predictables' types."""
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from dbdie_classes.base import Emoji, IsForKiller
 
 
-class ItemTypeOut(BaseModel):
+class ItemTypeCreate(BaseModel):
+    """Match item type create schema."""
+    name  : str
+    emoji : Emoji | None
+    ifk   : IsForKiller
+
+
+class ItemTypeOut(ItemTypeCreate):
     """Match item type output schema."""
-    id            :   int
-    name          :   str
-    emoji         : Emoji | None
-    ifk           :  IsForKiller
+    id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
-class AddonTypeOut(BaseModel):
+class AddonTypeCreate(BaseModel):
+    """Item-or-power addon type create schema."""
+    name  : str
+    emoji : Emoji | None
+    ifk   : IsForKiller
+
+
+class AddonTypeOut(AddonTypeCreate):
     """Item-or-power addon type output schema."""
-    id            :   int
-    name          :   str
-    emoji         : Emoji | None
-    ifk           :  IsForKiller
+    id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
-class OfferingTypeOut(BaseModel):
+class OfferingTypeCreate(BaseModel):
+    """Offering type create schema."""
+    name  : str
+    emoji : Emoji | None
+    ifk   : IsForKiller
+
+
+class OfferingTypeOut(OfferingTypeCreate):
     """Offering type output schema."""
-    id            :   int
-    name          :   str
-    emoji         : Emoji | None
-    ifk           :  IsForKiller
+    id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RarityCreate(BaseModel):
     """Item rarity create schema."""
-    name:  str
-    color: str
-    emoji: Emoji
+    name  :  str
+    color : str
+    emoji : Emoji
 
     @field_validator("emoji")
     @classmethod
@@ -42,9 +57,7 @@ class RarityCreate(BaseModel):
         return emoji
 
 
-class RarityOut(BaseModel):
+class RarityOut(RarityCreate):
     """Item rarity output schema."""
-    id:    int
-    name:  str
-    color: str
-    emoji: Emoji
+    id: int
+    model_config = ConfigDict(from_attributes=True)

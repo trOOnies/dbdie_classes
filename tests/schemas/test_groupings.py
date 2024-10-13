@@ -4,7 +4,7 @@ from copy import deepcopy
 from pydantic_core import ValidationError
 from pytest import raises
 
-from dbdie_classes.version import DBDVersion
+from dbdie_classes.schemas.helpers import DBDVersionOut
 from dbdie_classes.schemas.groupings import FullCharacterCreate
 
 BASE_FCC_DICT = {
@@ -13,7 +13,7 @@ BASE_FCC_DICT = {
     "power_name": None,
     "perk_names": ["Perk 1", "Perk 2", "Perk 3"],
     "addon_names": None,
-    "dbd_version": DBDVersion.from_str("7.5.0"),
+    "dbd_version": DBDVersionOut.from_str("7.5.0"),
     "common_name": "John",
     "emoji": "🤠",
 }

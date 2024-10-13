@@ -1,28 +1,55 @@
 """Extra code for DBD version related classes."""
 
 
+def check_type(other, exp_type, allow_none: bool = False) -> None:
+    if not isinstance(other, exp_type):
+        if allow_none and (other is None):
+            pass
+        else:
+            raise TypeError(f"Can only compare to another {exp_type.__name__}.")
+
+
 def compare_dbdv_ranges(dbdvr_self, dbdvr_other) -> bool:
-    if dbdvr_self._id != dbdvr_other._id:
+    """Compare `DBDVersionRanges` (dunder eq).
+
+    `dbdvr_self` is not None as it is the one that calls this function.
+    `dbdvr_other` can be None in some cases.
+    """
+    if dbdvr_other is None:
         return False
-    if not (dbdvr_self.bounded or dbdvr_other.bounded):
-        return True
-    return (
-        (dbdvr_self._max_id == dbdvr_other._max_id)
-        if (dbdvr_self.bounded == dbdvr_other.bounded)
-        else False
-    )
 
-
-def get_max_id(dbdvr_self, dbdvr_other):
+    if dbdvr_self.dbdv_min != dbdvr_other.dbdv_min:
+        return False
     if not dbdvr_self.bounded:
-        return dbdvr_other.max_id
-    elif not dbdvr_other.bounded:
-        return dbdvr_self.max_id
+        return not dbdvr_other.bounded
+
+    # Every other case is handled by __eq__ in DBDVersionOut
+    return dbdvr_self.dbdv_max == dbdvr_other.dbdv_max
+
+
+def is_left_to(dbdvr_left, dbdvr_right) -> bool:
+    """Check if `dbdvr_left` is to the left of `dbdvr_right` with no interserction."""
+    return dbdvr_left.bounded and (dbdvr_left.dbdv_max <= dbdvr_right.dbdv_min)
+
+
+def intersect_dbdv_max(dbdvr_self, dbdvr_other):
+    """Intersect max `DBDVersionOut` of 2 `DBDVersionRanges`.
+    Return a DBDVersionOut or None.
+
+    Neither dbdvr should be None by this point.
+    """
+    if not dbdvr_self.bounded:
+        return dbdvr_other.dbdv_max
     else:
-        _max_id = min(dbdvr_self._max_id, dbdvr_other._max_id)
-        return str(_max_id)
+        # Every other case is handled by __lt__ in DBDVersionOut
+        return (
+            dbdvr_self.dbdv_max
+            if dbdvr_self.dbdv_max < dbdvr_other.dbdv_max
+            else dbdvr_other.dbdv_max
+        )
 
 
+# TODO: May be deprecated
 def filter_images_with_dbdv(
     matches: list[dict],
     dbdv_min_id: int,
