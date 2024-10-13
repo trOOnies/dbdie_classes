@@ -13,7 +13,12 @@ BASE_FCC_DICT = {
     "power_name": None,
     "perk_names": ["Perk 1", "Perk 2", "Perk 3"],
     "addon_names": None,
-    "dbd_version": DBDVersionOut.from_str("7.5.0"),
+    "dbd_version": DBDVersionOut(
+        id=311,
+        name="7.5.0",
+        common_name="Alan Wake",
+        release_date="2024-01-30",
+    ),
     "common_name": "John",
     "emoji": "🤠",
 }

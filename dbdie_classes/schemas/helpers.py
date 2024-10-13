@@ -6,7 +6,7 @@ import datetime as dt
 from pydantic import BaseModel
 
 from dbdie_classes.code.version import (
-    check_type, compare_dbdv_ranges, intersect_max_ids, is_left_to
+    check_type, compare_dbdv_ranges, intersect_dbdv_max, is_left_to
 )
 
 
@@ -14,7 +14,7 @@ class DBDVersionCreate(BaseModel):
     """DBD game version creation schema (M.m.p-ptb)."""
 
     name         : str
-    common_date  : str | None
+    common_name  : str | None
     release_date : dt.date | None
 
     @property
@@ -164,7 +164,7 @@ class DBDVersionRange(BaseModel):
             if other.dbdv_min < self.dbdv_min
             else other.dbdv_min
         )
-        dbdv_max = intersect_max_ids(self, other)
+        dbdv_max = intersect_dbdv_max(self, other)
         return DBDVersionRange(dbdv_min, dbdv_max)
 
     def to_list(self) -> list[str | None]:
