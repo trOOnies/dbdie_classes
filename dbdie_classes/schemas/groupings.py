@@ -22,6 +22,7 @@ from dbdie_classes.base import (
 from dbdie_classes.code.groupings import (
     check_strict, labels_model_to_checks, predictables_for_sqld
 )
+from dbdie_classes.code.predictables import emoji_len_func
 from dbdie_classes.code.schemas import (
     check_addons_consistency,
     check_item_consistency,
@@ -70,9 +71,8 @@ class FullCharacterCreate(BaseModel):
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len(cls, emoji: str) -> Emoji:
-        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
-        return emoji
+    def emoji_len(cls, emoji: Emoji | None) -> Emoji | None:
+        return emoji_len_func(emoji)
 
     @model_validator(mode="after")
     def check_power_name(self) -> Self:
@@ -99,14 +99,8 @@ class FullCharacterOut(BaseModel):
 
     character:    CharacterOut
     power:             ItemOut | None
-    perks:       list[PerkOut]
+    perks:       list[PerkOut] | None  # can be None iif id is special null
     addons:     list[AddonOut] | None
-    common_name:           str | None
-    # proba:       Probability | None = None
-    ifk:           IsForKiller
-    base_char_id:      LabelId | None
-    dbdv_id:               int | None
-    emoji:               Emoji | None
 
 
 # * Players

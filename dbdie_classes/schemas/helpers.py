@@ -6,7 +6,10 @@ import datetime as dt
 from pydantic import BaseModel
 
 from dbdie_classes.code.version import (
-    check_type, compare_dbdv_ranges, intersect_dbdv_max, is_left_to
+    check_type,
+    compare_dbdv_ranges,
+    intersect_dbdv_max,
+    is_left_to,
 )
 
 

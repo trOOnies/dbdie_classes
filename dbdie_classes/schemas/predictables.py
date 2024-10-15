@@ -3,6 +3,7 @@
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from dbdie_classes.base import Emoji, IsForKiller, LabelId, LabelName
+from dbdie_classes.code.predictables import emoji_len_func
 
 
 class ItemCreate(BaseModel):
@@ -51,12 +52,11 @@ class CharacterCreate(BaseModel):
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len(cls, emoji: str) -> Emoji:
-        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
-        return emoji
+    def emoji_len(cls, emoji: Emoji | None) -> Emoji | None:
+        return emoji_len_func(emoji)
 
 
-class CharacterOut(CharacterCreate):
+class CharacterOut(CharacterCreate): 
     """Character output schema."""
 
     id: LabelId
@@ -73,9 +73,8 @@ class PerkCreate(BaseModel):
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len(cls, emoji: str) -> Emoji:
-        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
-        return emoji
+    def emoji_len(cls, emoji: Emoji | None) -> Emoji | None:
+        return emoji_len_func(emoji)
 
 
 class PerkOut(PerkCreate):
@@ -113,9 +112,8 @@ class StatusCreate(BaseModel):
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len(cls, emoji: str) -> Emoji:
-        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
-        return emoji
+    def emoji_len(cls, emoji: Emoji | None) -> Emoji | None:
+        return emoji_len_func(emoji)
 
 
 class StatusOut(StatusCreate):

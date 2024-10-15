@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import TYPE_CHECKING
 
 from dbdie_classes.options.FMT import ALL as ALL_FMT
@@ -24,10 +24,11 @@ class UserOut(UserCreate):
     """DBDIE user output schema."""
 
     id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CropperSwarmCreate(BaseModel):
-    """DBDIE CropperSwarm create schema."""
+    """DBDIE `CropperSwarm` register entry create schema."""
 
     name:          str
     user_id:       int
@@ -39,9 +40,10 @@ class CropperSwarmCreate(BaseModel):
 
 
 class CropperSwarmOut(CropperSwarmCreate):
-    """DBDIE CropperSwarm output schema."""
+    """DBDIE `CropperSwarm` register entry output schema."""
 
     id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FullModelTypeCreate(BaseModel):
@@ -56,10 +58,11 @@ class FullModelTypeOut(FullModelTypeCreate):
     """DBDIE full model type output schema."""
 
     id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ModelCreate(BaseModel):
-    """DBDIE IEModel create schema."""
+    """DBDIE `IEModel` register entry create schema."""
 
     name:              str
     user_id:           int
@@ -68,9 +71,9 @@ class ModelCreate(BaseModel):
     dbdv_min_id:       int
     dbdv_max_id:       int | None
     special_mode:      bool | None
-    date_created:      str | None
-    date_modified:     str | None
-    date_last_trained: str | None
+    date_created:      dt.datetime
+    date_modified:     dt.datetime
+    date_last_trained: dt.date
 
     def model_post_init(self, __context) -> None:
         if self.date_last_trained is None:
@@ -78,13 +81,14 @@ class ModelCreate(BaseModel):
 
 
 class ModelOut(ModelCreate):
-    """DBDIE IEModel output schema."""
+    """DBDIE `IEModel` register entry output schema."""
 
     id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ExtractorModelsIds(BaseModel):
-    """Ids of the IEModels of an InfoExtractor."""
+    """Ids of the `IEModels` of an `InfoExtractor`."""
 
     mid_0:  int | None = Field(None, ge=0)
     mid_1:  int | None = Field(None, ge=0)
@@ -106,8 +110,15 @@ class ExtractorModelsIds(BaseModel):
             fmt: (fmt_dict[fmt] if fmt in fmt_dict else None)
             for fmt in ALL_FMT
         }
-        return ExtractorModelsIds(
-            **{f"mid_{i}": mid for i, mid in enumerate(fmt_dict_.values())}
+        return cls(**{f"mid_{i}": mid for i, mid in enumerate(fmt_dict_.values())})
+
+    @classmethod
+    def from_extractor(cls, extractor) -> ExtractorModelsIds:
+        return cls(
+            **{
+                f"mid_{i}": getattr(extractor, f"mid_{i}")
+                for i in range(TOTAL_VALID_FMTS)
+            }
         )
 
     @property
@@ -139,7 +150,7 @@ class ExtractorModelsIds(BaseModel):
 
 
 class ExtractorCreate(BaseModel):
-    """DBDIE InfoExtractor create schema."""
+    """DBDIE `InfoExtractor` register entry create schema."""
 
     name:              str
     user_id:           int
@@ -148,24 +159,23 @@ class ExtractorCreate(BaseModel):
     special_mode:      bool | None
     cps_id:            int
     models_ids:        ExtractorModelsIds
-    date_created:      str | None
-    date_modified:     str | None
-    date_last_trained: str | None
+    date_created:      dt.datetime
+    date_modified:     dt.datetime
+    date_last_trained: dt.date
 
     def model_post_init(self, __context) -> None:
         assert self.models_ids.any()
-        if self.date_last_trained is None:
-            self.date_last_trained = dt.date.today().strftime("%Y-%m-%d")
 
 
 class ExtractorOut(ExtractorCreate):
-    """DBDIE InfoExtractor output schema."""
+    """DBDIE `InfoExtractor` register entry output schema."""
 
     id: int
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_sqla(cls, extractor) -> ExtractorOut:
-        return ExtractorOut(
+        return cls(
             id=extractor.id,
             name=extractor.name,
             user_id=extractor.user_id,
@@ -173,11 +183,11 @@ class ExtractorOut(ExtractorCreate):
             dbdv_max_id=extractor.dbdv_max_id,
             special_mode=extractor.special_mode,
             cps_id=extractor.cps_id,
-            models_ids={
-                f"mid_{i}": getattr(extractor, f"mid_{i}")
-                for i in range(TOTAL_VALID_FMTS)
-            },
+            models_ids=ExtractorModelsIds.from_extractor(extractor),
             date_created=extractor.date_created,
             date_modified=extractor.date_modified,
             date_last_trained=extractor.date_last_trained,
         )
+
+    def model_post_init(self, __context) -> None:
+        pass  # TODO: After registering a working Extractor, reinstate the any condition

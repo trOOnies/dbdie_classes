@@ -3,6 +3,7 @@
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from dbdie_classes.base import Emoji, IsForKiller
+from dbdie_classes.code.predictables import emoji_len_func
 
 
 class ItemTypeCreate(BaseModel):
@@ -52,9 +53,8 @@ class RarityCreate(BaseModel):
 
     @field_validator("emoji")
     @classmethod
-    def emoji_len(cls, emoji: str) -> Emoji:
-        assert len(emoji) == 1, "The emoji attribute can only be 1 character."
-        return emoji
+    def emoji_len(cls, emoji: Emoji | None) -> Emoji | None:
+        return emoji_len_func(emoji)
 
 
 class RarityOut(RarityCreate):
