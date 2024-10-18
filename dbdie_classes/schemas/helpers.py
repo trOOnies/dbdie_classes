@@ -125,8 +125,9 @@ class DBDVersionRange(BaseModel):
 
     dbdv_min: DBDVersionOut
     dbdv_max: DBDVersionOut | None
+    bounded:  bool = True  # ! do not use as input
 
-    def model_post_init(self):
+    def model_post_init(self, __context):
         self.bounded = self.dbdv_max is not None
         assert (not self.bounded) or (self.dbdv_min.id < self.dbdv_max.id)
 

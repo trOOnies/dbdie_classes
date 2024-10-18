@@ -13,7 +13,7 @@ BASE_FCC_DICT = {
     "power_name": None,
     "perk_names": ["Perk 1", "Perk 2", "Perk 3"],
     "addon_names": None,
-    "dbd_version": DBDVersionOut(
+    "dbdv": DBDVersionOut(
         id=311,
         name="7.5.0",
         common_name="Alan Wake",

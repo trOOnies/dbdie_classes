@@ -64,6 +64,7 @@ class FullModelTypeOut(FullModelTypeCreate):
 class ModelCreate(BaseModel):
     """DBDIE `IEModel` register entry create schema."""
 
+    id:                int  # we need the ID before registering it
     name:              str
     user_id:           int
     fmt_id:            int
@@ -83,7 +84,6 @@ class ModelCreate(BaseModel):
 class ModelOut(ModelCreate):
     """DBDIE `IEModel` register entry output schema."""
 
-    id: int
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -152,6 +152,7 @@ class ExtractorModelsIds(BaseModel):
 class ExtractorCreate(BaseModel):
     """DBDIE `InfoExtractor` register entry create schema."""
 
+    id:                int  # we need the ID before registering it
     name:              str
     user_id:           int
     dbdv_min_id:       int
@@ -170,7 +171,6 @@ class ExtractorCreate(BaseModel):
 class ExtractorOut(ExtractorCreate):
     """DBDIE `InfoExtractor` register entry output schema."""
 
-    id: int
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod

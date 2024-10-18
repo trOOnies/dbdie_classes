@@ -58,13 +58,13 @@ def filter_images_with_dbdv(
     if dbdv_max_id is None:
         return [
             m for m in matches
-            if m["dbd_version"]["id"] >= dbdv_min_id
+            if m["dbdv_id"] >= dbdv_min_id
         ]
     else:
         return [
             m for m in matches
             if (
-                (m["dbd_version"]["id"] >= dbdv_min_id)
-                and (m["dbd_version"]["id"] < dbdv_max_id)
+                (m["dbdv_id"] >= dbdv_min_id)
+                and (m["dbdv_id"] < dbdv_max_id)
             )
         ]
