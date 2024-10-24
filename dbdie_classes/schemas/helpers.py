@@ -171,6 +171,17 @@ class DBDVersionRange(BaseModel):
         dbdv_max = intersect_dbdv_max(self, other)
         return DBDVersionRange(dbdv_min, dbdv_max)
 
+    @classmethod
+    def from_dicts(cls, dbdv_min: dict, dbdv_max: dict | None) -> DBDVersionRange:
+        return cls(
+            dbdv_min=DBDVersionOut(**dbdv_min),
+            dbdv_max=DBDVersionOut(**dbdv_max) if dbdv_max is not None else None,
+        )
+
     def to_list(self) -> list[str | None]:
         """To 2-list of DBDVersionOut names."""
         return [self.dbdv_min.name, self.dbdv_max.name if self.bounded else None]
+
+    def to_ids(self) -> list[int | None]:
+        """To 2-list of DBDVersionOut ids."""
+        return [self.dbdv_min.id, self.dbdv_max.id if self.bounded else None]
