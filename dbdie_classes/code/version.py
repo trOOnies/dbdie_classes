@@ -2,6 +2,7 @@
 
 
 def check_type(other, exp_type, allow_none: bool = False) -> None:
+    """Check type of the object, especially previous of a class comparison."""
     if not isinstance(other, exp_type):
         if allow_none and (other is None):
             pass
@@ -28,7 +29,7 @@ def compare_dbdv_ranges(dbdvr_self, dbdvr_other) -> bool:
 
 
 def is_left_to(dbdvr_left, dbdvr_right) -> bool:
-    """Check if `dbdvr_left` is to the left of `dbdvr_right` with no interserction."""
+    """Check if `dbdvr_left` is to the left of `dbdvr_right` with no intersection."""
     return dbdvr_left.bounded and (dbdvr_left.dbdv_max <= dbdvr_right.dbdv_min)
 
 
@@ -49,7 +50,6 @@ def intersect_dbdv_max(dbdvr_self, dbdvr_other):
         )
 
 
-# TODO: May be deprecated
 def filter_images_with_dbdv(
     matches: list[dict],
     dbdv_min_id: int,

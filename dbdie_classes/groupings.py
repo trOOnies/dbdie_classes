@@ -71,10 +71,6 @@ class PredictableTuples:
         self.index += 1
         return pred_tuple
 
-    def to_lists(self) -> tuple[list["FullModelType"], list["ModelType"], list["IsForKiller"]]:
-        """Return data as a 3-tuple of lists."""
-        return self.fmts, self.mts, self.ifks
-
     @property
     def fmts(self) -> list["FullModelType"]:
         """Full model types."""
@@ -94,3 +90,7 @@ class PredictableTuples:
     def pts(self) -> list["PlayerType"]:
         """Player types."""
         return [ifk_to_pt(pred_tuple.ifk) for pred_tuple in self]
+
+    def to_lists(self) -> tuple[list["FullModelType"], list["ModelType"], list["IsForKiller"]]:
+        """Return data as a 3-tuple of lists."""
+        return self.fmts, self.mts, self.ifks
