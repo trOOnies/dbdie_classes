@@ -37,6 +37,10 @@ CropCoordsRaw = tuple[int, int, int, int]
 EncodedInfo = tuple[int, int, tuple, int, tuple, int, int]
 CropType = Literal["surv", "killer", "surv_player", "killer_player"]  # for Cropper
 
+# SQL
+TableName = str
+SQLColumn = str
+
 # Labels
 MatchId = int
 PlayerId = Literal[0, 1, 2, 3, 4]

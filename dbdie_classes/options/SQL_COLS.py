@@ -1,15 +1,19 @@
 """Columns as they appear in the SQL database."""
 
-from dbdie_classes.options import MODEL_TYPE as MT
+from typing import TYPE_CHECKING
 
-CHARACTER = ["character"]
-PERKS     = ["perks_0", "perks_1", "perks_2", "perks_3"]
-ITEM      = ["item"]
-ADDONS    = ["addons_0", "addons_1"]
-OFFERING  = ["offering"]
-STATUS    = ["status"]
-POINTS    = ["points"]
-PRESTIGE  = ["prestige"]
+from dbdie_classes.options import MODEL_TYPE as MT
+if TYPE_CHECKING:
+    from dbdie_classes.base import SQLColumn
+
+CHARACTER : list["SQLColumn"] = ["character"]
+PERKS     : list["SQLColumn"] = ["perks_0", "perks_1", "perks_2", "perks_3"]
+ITEM      : list["SQLColumn"] = ["item"]
+ADDONS    : list["SQLColumn"] = ["addons_0", "addons_1"]
+OFFERING  : list["SQLColumn"] = ["offering"]
+STATUS    : list["SQLColumn"] = ["status"]
+POINTS    : list["SQLColumn"] = ["points"]
+PRESTIGE  : list["SQLColumn"] = ["prestige"]
 
 ALL = [
     CHARACTER,
@@ -34,4 +38,4 @@ MT_TO_COLS = {
     # MT.PRESTIGE: PRESTIGE,
 }
 
-MANUALLY_CHECKED_COLS = [f"{mt}_mckd" for mt in MT.ALL]
+MANUALLY_CHECKED_COLS: list["SQLColumn"] = [f"{mt}_mckd" for mt in MT.ALL]
