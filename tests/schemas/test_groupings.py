@@ -2,10 +2,13 @@
 
 from copy import deepcopy
 from pydantic_core import ValidationError
-from pytest import raises
+from pytest import mark, raises
 
 from dbdie_classes.schemas.helpers import DBDVersionOut
-from dbdie_classes.schemas.groupings import FullCharacterCreate
+from dbdie_classes.schemas.groupings import (
+    FullCharacterCreate,
+    PlayerIn,
+)
 
 BASE_FCC_DICT = {
     "name": "John Doe",
@@ -30,7 +33,7 @@ class TestGroupings:
         for k, v in BASE_FCC_DICT.items():
             assert getattr(character, k) == v
 
-    def test_fcc_perk_names_raises(self):
+    def test_fcc_perk_names(self):
         d = deepcopy(BASE_FCC_DICT)
 
         for ifk in [False, True]:
@@ -39,28 +42,41 @@ class TestGroupings:
             d["addon_names"] = (
                 [f"Addon {i}" for i in range(20)] if ifk else None
             )
-
-            d["perk_names"] = []
-            with raises(ValidationError):
-                FullCharacterCreate(**d)
-            d["perk_names"] = ["Perk 1"]
-            with raises(ValidationError):
-                FullCharacterCreate(**d)
-            d["perk_names"] = ["Perk 1", "Perk 2"]
-            with raises(ValidationError):
-                FullCharacterCreate(**d)
             d["perk_names"] = ["Perk 1", "Perk 2", "Perk 3"]
             FullCharacterCreate(**d)
-            d["perk_names"] = ["Perk 1", "Perk 2", "Perk 1"]
+
+    @mark.parametrize(
+        "perk_names",
+        [
+            [],
+            ["Perk 1"],
+            ["Perk 1", "Perk 2"],
+            ["Perk 1", "Perk 2", "Perk 1"],
+            ["Perk 1", "Perk 2", "Perk 3", "Perk 4"],
+        ],
+    )
+    def test_fcc_perk_names_raises(self, perk_names):
+        d = deepcopy(BASE_FCC_DICT)
+
+        for ifk in [False, True]:
+            d["ifk"] = ifk
+            d["power_name"] = "Scary lightning" if ifk else None
+            d["addon_names"] = (
+                [f"Addon {i}" for i in range(20)] if ifk else None
+            )
+            d["perk_names"] = perk_names
             with raises(ValidationError):
                 FullCharacterCreate(**d)
-            d["perk_names"] = ["Perk 1", "Perk 2", "Perk 3", "Perk 4"]
-            with raises(ValidationError):
-                FullCharacterCreate(**d)
+
+    def test_fcc_emoji(self):
+        d = deepcopy(BASE_FCC_DICT)
+        for e in ["🤠🤠", "🤠🤠🤠", 3 * "🤠"]:
+            d["emoji"] = e
+            FullCharacterCreate(**d)
 
     def test_fcc_emoji_raises(self):
         d = deepcopy(BASE_FCC_DICT)
-        for e in ["", "🤠🤠", "🤠🤠🤠"]:
+        for e in ["", "🤠🤠🤠🤠🤠", "🤠🤠🤠🤠🤠🤠🤠", 5 * "🤠"]:
             d["emoji"] = e
             with raises(ValidationError):
                 FullCharacterCreate(**d)
@@ -106,3 +122,67 @@ class TestGroupings:
             FullCharacterCreate(**d)
         d["addon_names"] = None
         FullCharacterCreate(**d)
+
+
+    def test_player_in_count_ids(self):
+        PlayerIn(
+            id=0,
+            character_id=None,
+            perk_ids=None,
+            item_id=None,
+            addon_ids=None,
+            offering_id=None,
+            status_id=None,
+            points=None,
+            prestige=None,
+        )
+        PlayerIn(
+            id=0,
+            character_id=0,
+            perk_ids=[0, 1, 2, 3],
+            item_id=0,
+            addon_ids=[0, 1],
+            offering_id=0,
+            status_id=0,
+            points=0,
+            prestige=0,
+        )
+
+
+    def test_player_in_count_ids_raises(self):
+        with raises(ValidationError):
+            PlayerIn(
+                id=0,
+                character_id=0,
+                perk_ids=0,
+                item_id=0,
+                addon_ids=0,
+                offering_id=0,
+                status_id=0,
+                points=0,
+                prestige=0,
+            )
+        with raises(ValidationError):
+            PlayerIn(
+                id=0,
+                character_id=0,
+                perk_ids=[0, 1],
+                item_id=0,
+                addon_ids=[0, 1],
+                offering_id=0,
+                status_id=0,
+                points=0,
+                prestige=0,
+            )
+        with raises(ValidationError):
+            PlayerIn(
+                id=0,
+                character_id=0,
+                perk_ids=[0, 1, 2, 3],
+                item_id=0,
+                addon_ids=[0, 1, 2],
+                offering_id=0,
+                status_id=0,
+                points=0,
+                prestige=0,
+            )

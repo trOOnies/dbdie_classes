@@ -6,7 +6,13 @@ import datetime as dt
 from typing import Optional
 from typing_extensions import Self
 
-from pydantic import BaseModel, Field, ValidationInfo, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 from dbdie_classes.base import (
     Emoji,
@@ -40,7 +46,6 @@ from dbdie_classes.schemas.predictables import (
 )
 from dbdie_classes.options.MODEL_TYPE import ALL as ALL_MT
 
-
 # * Full characters
 
 
@@ -58,7 +63,7 @@ class FullCharacterCreate(BaseModel):
     power_name:        LabelName | None
     perk_names:  list[LabelName]
     addon_names: list[LabelName] | None
-    dbd_version:   DBDVersionOut
+    dbdv:          DBDVersionOut
     common_name:             str
     emoji:                 Emoji
 
@@ -352,7 +357,7 @@ class MatchOut(MatchCreate):
 class VersionedFolderUpload(BaseModel):
     """DBD-versioned folder to upload."""
 
-    dbd_version:  DBDVersionOut
+    dbdv:         DBDVersionOut
     special_mode: Optional[bool] = None
 
 
@@ -362,7 +367,7 @@ class VersionedMatchOut(BaseModel):
     id:           MatchId
     filename:     Filename
     match_date:   dt.date | None
-    dbd_version:  DBDVersionOut
+    dbdv:         DBDVersionOut
     special_mode: bool | None
 
 
