@@ -357,18 +357,8 @@ class MatchOut(MatchCreate):
 class VersionedFolderUpload(BaseModel):
     """DBD-versioned folder to upload."""
 
-    dbdv:         DBDVersionOut
+    dbdv_name:     str
     special_mode: Optional[bool] = None
-
-
-class VersionedMatchOut(BaseModel):
-    """DBD match simplified output schema for DBD-versioned folder upload."""
-
-    id:           MatchId
-    filename:     Filename
-    match_date:   dt.date | None
-    dbdv:         DBDVersionOut
-    special_mode: bool | None
 
 
 class LabelsCreate(BaseModel):
