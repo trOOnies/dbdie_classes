@@ -9,6 +9,7 @@ from typing_extensions import Self
 from pydantic import (
     BaseModel,
     Field,
+    StrictBool,
     ValidationInfo,
     field_validator,
     model_validator,
@@ -58,14 +59,14 @@ class FullCharacterCreate(BaseModel):
     use base_char_id. Please use CharacterCreate instead.
     """
 
-    name:              LabelName
-    ifk:                    bool
-    power_name:        LabelName | None
-    perk_names:  list[LabelName]
-    addon_names: list[LabelName] | None
-    dbdv:          DBDVersionOut
-    common_name:             str
-    emoji:                 Emoji
+    name:              LabelName        = Field(..., description="Character's full name")
+    ifk:              StrictBool        = Field(..., description="Is killer")
+    power_name:        LabelName | None = Field(..., description="Name of the character's power (if killer)")
+    perk_names:  list[LabelName]        = Field(..., description="Name of the character's perks")
+    addon_names: list[LabelName] | None = Field(..., description="Names of the character's addons (if killer)")
+    dbdv:          DBDVersionOut        = Field(..., description="Character release's DBD version")
+    common_name:             str        = Field(..., description="Character's common name")
+    emoji:                 Emoji        = Field(..., description="Character's corresponding emoji")
 
     @field_validator("perk_names")
     @classmethod
@@ -102,10 +103,10 @@ class FullCharacterCreate(BaseModel):
 class FullCharacterOut(BaseModel):
     """Full character output schema."""
 
-    character:    CharacterOut
-    power:             ItemOut | None
-    perks:       list[PerkOut] | None  # can be None iif id is special null
-    addons:     list[AddonOut] | None
+    character:    CharacterOut        = Field(..., description="Character's output schema")
+    power:             ItemOut | None = Field(..., description="Character's item (if killer)")
+    perks:       list[PerkOut] | None = Field(..., description="Character's perks (can be None iif id is special null)")
+    addons:     list[AddonOut] | None = Field(..., description="Character's addons (if killer)")
 
 
 # * Players
@@ -114,15 +115,15 @@ class FullCharacterOut(BaseModel):
 class PlayerIn(BaseModel):
     """Player input schema to be used for creating labels."""
 
-    id:                PlayerId
-    character_id:       LabelId | None = Field(None, ge=0)
-    perk_ids:     list[LabelId] | None = None
-    item_id:            LabelId | None = Field(None, ge=0)
-    addon_ids:    list[LabelId] | None = None
-    offering_id:        LabelId | None = Field(None, ge=0)
-    status_id:          LabelId | None = Field(None, ge=0)
-    points:                 int | None = Field(None, ge=0)
-    prestige:               int | None = Field(None, ge=0, le=100)
+    id:                PlayerId        = Field(...,  description="Player ID (0-4 both inclusive)")
+    character_id:       LabelId | None = Field(None, description="Character ID", ge=0)
+    perk_ids:     list[LabelId] | None = Field(None, description="Perks IDs")
+    item_id:            LabelId | None = Field(None, description="Item ID", ge=0)
+    addon_ids:    list[LabelId] | None = Field(None, description="Addons IDs")
+    offering_id:        LabelId | None = Field(None, description="Offering ID", ge=0)
+    status_id:          LabelId | None = Field(None, description="End status ID", ge=0)
+    points:                 int | None = Field(None, description="Bloodpoints earned", ge=0)
+    prestige:               int | None = Field(None, description="Prestige", ge=0, le=100)
 
     @classmethod
     def from_labels(cls, labels) -> PlayerIn:
@@ -196,44 +197,39 @@ class PlayerOut(BaseModel):
     """Player output schema as seen in created labels."""
 
     id:              PlayerId
-    character:   CharacterOut
-    perks:      list[PerkOut]
-    item:             ItemOut
-    addons:    list[AddonOut]
-    offering:     OfferingOut
-    status:         StatusOut
-    points:               int
-    prestige:             int
-    is_consistent: Optional[bool] = None
+    character:   CharacterOut = Field(..., description="Character used")
+    perks:      list[PerkOut] = Field(..., description="Perks used")
+    item:             ItemOut = Field(..., description="Item used")
+    addons:    list[AddonOut] = Field(..., description="Addons used")
+    offering:     OfferingOut = Field(..., description="Offering used")
+    status:         StatusOut = Field(..., description="End status")
+    points:               int = Field(..., description="Bloodpoints earned")
+    prestige:             int = Field(..., description="Prestige")
+    is_consistent: StrictBool = Field(True, description="[AUTOCALC] Whether all the player info is consistent")
 
     def model_post_init(self, __context) -> None:
-        self.check_consistency()
+        self._check_consistency()
 
     @property
     def ifk(self) -> IsForKiller:
         return self.character.ifk
 
-    def check_consistency(self) -> None:
+    def _check_consistency(self) -> None:
         """Execute all consistency checks.
         It's purposefully separated so that in the future we could have
         customized self healing methods.
         """
-        if self.ifk is None:
-            self.is_consistent = False
-        elif any(
-            not check_killer_consistency(self.ifk, perk) for perk in self.perks
-        ):
-            self.is_consistent = False
-        elif not check_killer_consistency(self.ifk, self.offering):
-            self.is_consistent = False
-        elif not check_item_consistency(self.ifk, self.item.type_id):
-            self.is_consistent = False
-        elif not check_addons_consistency(self.ifk, self.addons):
-            self.is_consistent = False
-        elif not check_status_consistency(self.status.character_id, self.ifk):
-            self.is_consistent = False
-        else:
-            self.is_consistent = True
+        assert self.is_consistent
+        self.is_consistent = (
+            self.ifk is not None
+            and not any(
+                not check_killer_consistency(self.ifk, perk) for perk in self.perks
+            )
+            and check_killer_consistency(self.ifk, self.offering)
+            and check_item_consistency(self.ifk, self.item.type_id)
+            and check_addons_consistency(self.ifk, self.addons)
+            and check_status_consistency(self.status.character_id, self.ifk)
+        )
 
 
 # * Matches
@@ -241,17 +237,17 @@ class PlayerOut(BaseModel):
 
 class ManualChecksIn(BaseModel):
     """Manual predictables checks input schema."""
-    addons    : ManualCheck = None
-    character : ManualCheck = None
-    item      : ManualCheck = None
-    offering  : ManualCheck = None
-    perks     : ManualCheck = None
-    points    : ManualCheck = None
-    prestige  : ManualCheck = None
-    status    : ManualCheck = None
-    is_init     : bool = False  # ! do not use
-    in_progress : bool = False  # ! do not use
-    completed   : bool = False  # ! do not use
+    addons      : ManualCheck = Field(None, description="Expected manual check for addons")
+    character   : ManualCheck = Field(None, description="Expected manual check for character")
+    item        : ManualCheck = Field(None, description="Expected manual check for item")
+    offering    : ManualCheck = Field(None, description="Expected manual check for offering")
+    perks       : ManualCheck = Field(None, description="Expected manual check for perks")
+    points      : ManualCheck = Field(None, description="Expected manual check for points")
+    prestige    : ManualCheck = Field(None, description="Expected manual check for prestige")
+    status      : ManualCheck = Field(None, description="Expected manual check for status")
+    is_init     :  StrictBool = Field(False, description="[AUTOCALC] At least 1 check is not None")
+    in_progress :  StrictBool = Field(False, description="[AUTOCALC] At least 1 check is true")
+    completed   :  StrictBool = Field(False, description="[AUTOCALC] All checks are true")
 
     def model_post_init(self, __context) -> None:
         assert not self.is_init
@@ -270,6 +266,7 @@ class ManualChecksIn(BaseModel):
 
     @property
     def checks(self) -> list[ManualCheck]:
+        """`ManualChecks` in list form."""
         return [
             self.addons,
             self.character,
@@ -295,10 +292,10 @@ class ManualChecksIn(BaseModel):
 
 class ManualChecksOut(BaseModel):
     """Manual predictables checks output schema."""
-    predictables : dict["ModelType", ManualCheck]
-    is_init      : bool = False  # ! do not use
-    in_progress  : bool = False  # ! do not use
-    completed    : bool = False  # ! do not use
+    predictables : dict["ModelType", ManualCheck] = Field(..., description="Manual checks in a ModelType-keyed dict")
+    is_init      : StrictBool = Field(False, description="[AUTOCALC] At least 1 check is not None")
+    in_progress  : StrictBool = Field(False, description="[AUTOCALC] At least 1 check is true")
+    completed    : StrictBool = Field(False, description="[AUTOCALC] All checks are true")
 
     @property
     def checks(self) -> list[ManualCheck]:
@@ -319,7 +316,8 @@ class ManualChecksOut(BaseModel):
 
     @classmethod
     def from_labels(cls, labels) -> ManualChecksOut:
-        mc_out = ManualChecksOut(
+        """Create `ManualChecksOut` from the SQLAlchemy `Labels` model."""
+        return ManualChecksOut(
             predictables={
                 "addons": labels.addons_mckd,
                 "character": labels.character_mckd,
@@ -331,54 +329,54 @@ class ManualChecksOut(BaseModel):
                 "status": labels.status_mckd,
             }
         )
-        return mc_out
 
 
 class MatchCreate(BaseModel):
     """DBD match creation schema."""
 
-    filename:     Filename
-    match_date:   dt.date | None
-    dbdv_id:      int | None
-    special_mode: bool | None
-    user_id:      int | None = Field(..., ge=0)
-    extr_id:      int | None = Field(..., ge=0)
-    kills:        int | None = Field(..., ge=0, le=4)
+    filename:    Filename        = Field(..., description="Match image filename")
+    match_date:   dt.date | None = Field(..., description="Date of the match")
+    dbdv_id:          int | None = Field(..., description="DBD game version of the match")
+    special_mode:    bool | None = Field(..., description="Whether the match is a special game mode")
+    user_id:          int | None = Field(..., description="User ID of the match's uploader", ge=0)
+    extr_id:          int | None = Field(..., description="ID of the InfoExtractor used for extraction", ge=0)
+    kills:            int | None = Field(..., description="Total kills of the match", ge=0, le=4)
 
 
 class MatchOut(MatchCreate):
     """DBD match output schema."""
 
-    id:            MatchId
-    date_created:  dt.datetime
-    date_modified: dt.datetime
+    id:            MatchId     = Field(..., description="ID of the match")
+    date_created:  dt.datetime = Field(..., description="Creation datetime")
+    date_modified: dt.datetime = Field(..., description="Last modification datetime")
 
 
 class VersionedFolderUpload(BaseModel):
     """DBD-versioned folder to upload."""
 
-    dbdv_name:     str
-    special_mode: Optional[bool] = None
+    dbdv_name:            str = Field(..., description="Game full patch identification")
+    special_mode: bool | None = Field(..., description="Whether the matches are a special game mode")
 
 
 class LabelsCreate(BaseModel):
     """Labels creation schema."""
 
-    match_id:       MatchId
-    player:         PlayerIn
-    user_id:        int | None = None
-    extr_id:        int | None = None
-    manual_checks:  ManualChecksIn
+    match_id:       MatchId        = Field(...,  description="ID of the match")
+    player:         PlayerIn       = Field(...,  description="Player schema")
+    user_id:        int | None     = Field(None, description="User ID of the match's uploader", ge=0)
+    extr_id:        int | None     = Field(None, description="ID of the InfoExtractor used for extraction", ge=0)
+    manual_checks:  ManualChecksIn = Field(...,  description="Manual predictables checks")
 
 
 class LabelsOut(LabelsCreate):
     """Labels output schema."""
 
-    date_modified:  dt.datetime
-    manual_checks:  ManualChecksOut
+    date_modified:  dt.datetime     = Field(..., description="Last modification datetime")
+    manual_checks:  ManualChecksOut = Field(..., description="Manual predictables checks")
 
     @classmethod
     def from_labels(cls, labels) -> LabelsOut:
+        """Create `LabelsOut` from SQLAlchemy labels."""
         labels_out = LabelsOut(
             match_id=labels.match_id,
             player=PlayerIn.from_labels(labels),
@@ -397,7 +395,7 @@ class FullMatchOut(BaseModel):
     version:       DBDVersionOut
     players:       list[PlayerOut]
     kills:         int = Field(-1, ge=-1, le=4)  # ! do not use
-    is_consistent: bool = True  # ! do not use
+    is_consistent: StrictBool = True  # ! do not use
 
     def model_post_init(self, __context) -> None:
         assert self.kills == -1

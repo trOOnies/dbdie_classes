@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, NonNegativeInt, StrictBool
 
 from dbdie_classes.code.version import (
     check_type,
@@ -16,9 +16,9 @@ from dbdie_classes.code.version import (
 class DBDVersionCreate(BaseModel):
     """DBD game version creation schema (M.m.p-ptb)."""
 
-    name         : str
-    common_name  : str | None
-    release_date : dt.date | None
+    name         : str            = Field(..., description="Game full patch identification")
+    common_name  : str | None     = Field(..., description="Common name for the patch")
+    release_date : dt.date | None = Field(..., description="Patch release date")
 
     @property
     def is_ptb(self) -> bool:
@@ -46,6 +46,10 @@ class DBDVersionCreate(BaseModel):
         return M, m, p, self.is_ptb
 
 
+def coalesce(other, cond: bool, else_val: bool) -> bool:
+    return cond if other is not None else else_val
+
+
 class DBDVersionOut(DBDVersionCreate):
     """DBD game version output schema (M.m.p-ptb).
 
@@ -54,7 +58,7 @@ class DBDVersionOut(DBDVersionCreate):
     for an unbounded `DBDVersionRange`.
     """
 
-    id: int
+    id: NonNegativeInt
 
     @classmethod
     def from_model(cls, dbdv) -> DBDVersionOut:
@@ -68,51 +72,27 @@ class DBDVersionOut(DBDVersionCreate):
 
     def __eq__(self, other) -> bool:
         check_type(other, DBDVersionOut, allow_none=True)
-        return (
-            self.id == other.id
-            if other is not None
-            else False
-        )
+        return coalesce(other, self.id == other.id, else_val=False)
 
     def __ne__(self, other) -> bool:
         check_type(other, DBDVersionOut, allow_none=True)
-        return (
-            self.id != other.id
-            if other is not None
-            else True
-        )
+        return coalesce(other, self.id != other.id, else_val=True)
 
     def __le__(self, other) -> bool:
         check_type(other, DBDVersionOut, allow_none=True)
-        return (
-            self.id <= other.id
-            if other is not None
-            else True
-        )
+        return coalesce(other, self.id <= other.id, else_val=True)
 
     def __lt__(self, other) -> bool:
         check_type(other, DBDVersionOut, allow_none=True)
-        return (
-            self.id < other.id
-            if other is not None
-            else True
-        )
+        return coalesce(other, self.id < other.id, else_val=True)
 
     def __ge__(self, other) -> bool:
         check_type(other, DBDVersionOut, allow_none=True)
-        return (
-            self.id >= other.id
-            if other is not None
-            else False
-        )
+        return coalesce(other, self.id >= other.id, else_val=False)
 
     def __gt__(self, other) -> bool:
         check_type(other, DBDVersionOut, allow_none=True)
-        return (
-            self.id > other.id
-            if other is not None
-            else False
-        )
+        return coalesce(other, self.id > other.id, else_val=False)
 
 
 class DBDVersionRange(BaseModel):
@@ -123,9 +103,9 @@ class DBDVersionRange(BaseModel):
     for null intersections between `DBDVersionRanges`.
     """
 
-    dbdv_min: DBDVersionOut
-    dbdv_max: DBDVersionOut | None
-    bounded:  bool = True  # ! do not use as input
+    dbdv_min: DBDVersionOut        = Field(..., description="Range minimum version (inclusive)")
+    dbdv_max: DBDVersionOut | None = Field(..., description="Range maximum version (exclusive)")
+    bounded:  StrictBool = True  # ! do not use as input
 
     def model_post_init(self, __context):
         self.bounded = self.dbdv_max is not None
@@ -156,7 +136,7 @@ class DBDVersionRange(BaseModel):
         )
 
     def __and__(self, other: DBDVersionRange | None) -> DBDVersionRange | None:
-        """`DBDVersionRanges` intersection."""
+        """Return the intersection range of the `DBDVersionRanges`."""
         if other is None:
             return None
 
@@ -173,6 +153,7 @@ class DBDVersionRange(BaseModel):
 
     @classmethod
     def from_dicts(cls, dbdv_min: dict, dbdv_max: dict | None) -> DBDVersionRange:
+        """Create a `DBDVersionRange` from its dict definitions."""
         return cls(
             dbdv_min=DBDVersionOut(**dbdv_min),
             dbdv_max=DBDVersionOut(**dbdv_max) if dbdv_max is not None else None,
