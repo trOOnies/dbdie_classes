@@ -1,5 +1,7 @@
 """Pydantic schemas for the classes that are to be predicted."""
 
+from __future__ import annotations
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from dbdie_classes.base import Emoji, IsForKiller, LabelId, LabelName
@@ -11,7 +13,7 @@ class ItemCreate(BaseModel):
 
     name      : LabelName  = Field(..., description="Item's name")
     type_id   : int        = Field(..., description="Item's type ID")
-    dbdv_id   : str | None = Field(..., description="Item's release DBD version id")
+    dbdv_id   : int | None = Field(..., description="Item's release DBD version id")
     rarity_id : int | None = Field(..., description="Item's rarity ID")
 
 

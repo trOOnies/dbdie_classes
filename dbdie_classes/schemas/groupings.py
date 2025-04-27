@@ -64,7 +64,7 @@ class FullCharacterCreate(BaseModel):
     power_name:        LabelName | None = Field(..., description="Name of the character's power (if killer)")
     perk_names:  list[LabelName]        = Field(..., description="Name of the character's perks")
     addon_names: list[LabelName] | None = Field(..., description="Names of the character's addons (if killer)")
-    dbdv:          DBDVersionOut        = Field(..., description="Character release's DBD version")
+    dbdv_id:                 int | None = Field(..., description="Character's release DBD version id")
     common_name:             str        = Field(..., description="Character's common name")
     emoji:                 Emoji        = Field(..., description="Character's corresponding emoji")
 
